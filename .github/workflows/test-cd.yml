@@ -1,0 +1,105 @@
+name: "Test CD"
+
+on:
+  workflow_run:
+    workflows: ["Dev CI/CD"]
+    types: [completed]
+    branches: ["dev"]
+  push:
+    branches: ["test"]
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: "Commit SHA to promote"
+        required: false
+        type: string
+      image_tag:
+        description: "Image tag to promote (defaults to dev-<sha>)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    name: Resolve artifact to promote
+    runs-on: ubuntu-latest
+    outputs:
+      commit_sha: ${{ steps.vars.outputs.commit_sha }}
+      image_tag: ${{ steps.vars.outputs.image_tag }}
+    steps:
+      - name: Validate Dev workflow success
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            echo "Upstream workflow failed; aborting."
+            exit 1
+          fi
+      - id: vars
+        name: Set variables
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            echo "commit_sha=${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=dev-${{ github.event.workflow_run.head_sha }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "commit_sha=${{ inputs.commit_sha }}" >> $GITHUB_OUTPUT
+            if [ -n "${{ inputs.image_tag }}" ]; then
+              echo "image_tag=${{ inputs.image_tag }}" >> $GITHUB_OUTPUT
+            else
+              echo "image_tag=dev-${{ inputs.commit_sha }}" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "commit_sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "image_tag=dev-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
+  promote:
+    name: Promote image to Test
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Pull Dev images
+        run: |
+          for svc in api-gateway product-service inventory-service; do
+            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }}
+          done
+      - name: Retag for Test
+        run: |
+          for svc in api-gateway product-service inventory-service; do
+            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+          done
+      - name: Push Test tags
+        run: |
+          for svc in api-gateway product-service inventory-service; do
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+          done
+
+  deploy_test:
+    name: Deploy to Test
+    runs-on: ubuntu-latest
+    needs: promote
+    environment:
+      name: test
+    steps:
+      - name: Deploy (placeholder)
+        run: |
+          echo "Deploy to Test environment using test-${{ needs.prepare.outputs.commit_sha }}."
+          echo "Implement deploy script."
