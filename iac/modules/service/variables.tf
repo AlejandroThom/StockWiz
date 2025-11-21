@@ -1,0 +1,45 @@
+variable "project_name" { type = string }
+variable "service_name" { type = string }
+variable "vpc_id" { type = string }
+variable "cluster_id" { type = string }
+variable "alb_listener_arn" { type = string }
+variable "lab_role_arn" { type = string }
+variable "aws_region" { type = string }
+
+variable "image_repo" { type = string }
+variable "image_tag" { type = string }
+
+variable "container_port" {
+  type    = number
+  default = 80
+}
+
+variable "path_pattern" {
+  type        = string
+  description = "Path pattern for ALB routing (e.g. /api/products*)"
+}
+
+variable "health_check_path" {
+  type    = string
+  default = "/health"
+}
+
+variable "listener_rule_priority" {
+  type        = number
+  description = "Priority for the ALB listener rule (must be unique)"
+}
+
+variable "desired_count" {
+  type    = number
+  default = 1
+}
+
+variable "cpu" {
+  type    = number
+  default = 256
+}
+
+variable "memory" {
+  type    = number
+  default = 512
+}
