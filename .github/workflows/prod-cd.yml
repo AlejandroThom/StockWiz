@@ -73,10 +73,26 @@ jobs:
     environment:
       name: prod
     steps:
-      - name: Deploy (placeholder)
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: iac/environments/prod
+        run: terraform init
+
+      - name: Terraform Apply
+        working-directory: iac/environments/prod
         run: |
-          echo "Deploy to Prod environment using the following images:"
-          for svc in api-gateway product-service inventory-service; do
-            echo "${{ env.REGISTRY }}/${{ github.repository }}/${svc}:test-${{ needs.resolve.outputs.commit_sha }}"
-          done
-          echo "Implement deploy script."
+          terraform apply -auto-approve \
+            -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
+            -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
