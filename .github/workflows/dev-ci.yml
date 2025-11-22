@@ -164,7 +164,7 @@ jobs:
       - name: Run Product Load Test
         run: |
           k6 run tests/products/load-test-products.js
-          
+
   cleanup_Bootstrap:
     name: Cleanup on Failure
     runs-on: ubuntu-latest
@@ -213,7 +213,7 @@ jobs:
         working-directory: iac/bootstrap
         run: terraform destroy -auto-approve
 
-        - name: Destroy deploy dev infrastructure
+      - name: Destroy deploy dev infrastructure
         working-directory: iac/environments/dev
         run: terraform destroy -auto-approve
 
