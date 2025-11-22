@@ -159,11 +159,11 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          k6 run tests/products/api-gatewayload-test-products.js
+          k6 run Tests/Load/api-gatewayload-test-products.js
 
       - name: Run Product Load Test
         run: |
-          k6 run tests/products/load-test-products.js
+          k6 run Tests/Load/load-test-products.js
 
   cleanup_Bootstrap:
     name: Cleanup on Failure
@@ -192,7 +192,7 @@ jobs:
   cleanup_after_test:
     name: Cleanup on Failure
     runs-on: ubuntu-latest
-    needs: load_tests
+    needs: [load_tests,bootstrap]
     if: ${{ failure() }}   # Se ejecuta solo si alguno de los jobs anteriores falla
     steps:
       - name: Checkout repository
@@ -209,9 +209,17 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Init Terraform bootstrap
+        working-directory: iac/bootstrap
+        run: terraform init
+
       - name: Destroy bootstrap infrastructure
         working-directory: iac/bootstrap
         run: terraform destroy -auto-approve
+
+      - name: Init Terraform dev
+        working-directory: iac/environments/dev
+        run: terraform init
 
       - name: Destroy deploy dev infrastructure
         working-directory: iac/environments/dev
