@@ -137,9 +137,7 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/dev
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=dev-${{ github.sha }}" \
-            -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
+          terraform apply -auto-approve }
 
   load_tests:
     name: Run k6 load tests
