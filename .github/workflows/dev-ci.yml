@@ -137,7 +137,7 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/dev
         run: |
-          terraform apply -auto-approve }
+          terraform apply -auto-approve
 
   load_tests:
     name: Run k6 load tests
