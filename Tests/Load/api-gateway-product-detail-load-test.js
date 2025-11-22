@@ -1,0 +1,31 @@
+import http from "k6/http";
+import { check, sleep } from "k6";
+
+export let options = {
+  thresholds: {
+    http_req_failed: ["rate<0.01"],
+    http_req_duration: ["p(95)<600"],
+  },
+  stages: [
+    { duration: "15s", target: 15 },
+    { duration: "45s", target: 40 },
+    { duration: "10s", target: 0 },
+  ],
+};
+
+export default function () {
+  const productId = Math.floor(Math.random() * 5) + 1;
+
+  const res = http.get(
+    `http://localhost:8000/api/products/${productId}`
+  );
+
+  check(res, {
+    "status OK": (r) => r.status === 200,
+    "returns JSON": (r) => !!r.json(),
+    "includes inventory": (r) =>
+      r.json().inventory !== undefined,
+  });
+
+  sleep(1);
+}
