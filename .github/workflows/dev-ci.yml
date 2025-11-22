@@ -101,11 +101,11 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init (bootstrap)
-        working-directory:  ./StockWiz/iac/environments/bootstrap
+        working-directory:  ../iac/environments/bootstrap
         run: terraform init
 
       - name: Terraform Apply (bootstrap)
-        working-directory:  ./StockWiz/iac/environments/bootstrap
+        working-directory:  ../iac/environments/bootstrap
         run: terraform apply -auto-approve
 
   deploy_dev:
