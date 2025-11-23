@@ -159,11 +159,11 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          k6 run Tests/Load/api-gatewayload-test-products.js
+          k6 run Tests/Load/api-gateway-load-test-products.js
 
       - name: Run Product Load Test
         run: |
-          k6 run Tests/Load/load-test-products.js
+          k6 run Tests/Load/api-gateway-product-detail-load-test.js
 
 
   cleanup_after_test:
