@@ -1,4 +1,4 @@
-name: Dev CI/CD - SonarCloud Quality Gate
+name: Dev CI/CD - SonarCloud Quality Gate.
 
 on:
   push:
