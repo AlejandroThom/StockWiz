@@ -28,18 +28,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-sonar:
+  sonar:
     name: SonarCloud Scan and Quality Gate
     runs-on: ubuntu-latest
-
-
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
@@ -49,7 +45,6 @@ sonar:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Sonar Quality Gate
         uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
         env:
