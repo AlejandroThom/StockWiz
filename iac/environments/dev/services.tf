@@ -1,3 +1,7 @@
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
+}
+
 module "api_gateway" {
   source                 = "../../modules/service"
   project_name           = var.project_name
