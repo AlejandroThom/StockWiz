@@ -68,6 +68,7 @@ resource "aws_ecs_task_definition" "service" {
 resource "aws_ecs_service" "service" {
   name            = var.service_name
   cluster         = var.cluster_id
+  force_new_deployment = true
   task_definition = aws_ecs_task_definition.service.arn
   desired_count   = var.desired_count
 
