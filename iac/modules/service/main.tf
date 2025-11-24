@@ -1,5 +1,5 @@
 resource "aws_lb_target_group" "service" {
-  name        = "${var.project_name}-${var.service_name}-tg"
+  name        = "${var.project_name}-${var.service_name}"
   port        = var.container_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
