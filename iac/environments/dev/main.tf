@@ -42,3 +42,10 @@ module "compute" {
   asg_max_size          = 2
   asg_desired_capacity  = 1
 }
+
+module "discovery" {
+  source         = "../../modules/discovery"
+  project_name   = var.project_name
+  vpc_id         = module.networking.vpc_id
+  namespace_name = "stockwiz.local"
+}

@@ -53,6 +53,7 @@ resource "aws_ecs_task_definition" "service" {
           protocol      = "tcp"
         }
       ]
+      environment = var.environment_variables
       logConfiguration = {
         logDriver = "awslogs"
         options = {

@@ -43,3 +43,11 @@ variable "memory" {
   type    = number
   default = 512
 }
+
+variable "environment_variables" {
+  type = list(object({
+    name  = string
+    value = string
+  }))
+  default = []
+}
