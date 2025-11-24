@@ -1,5 +1,5 @@
 resource "aws_lb_target_group" "service" {
-  name        = "${var.project_name}-${var.service_name}-tg"
+  name        = "${var.project_name}-${var.service_name}"
   port        = var.container_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
@@ -33,9 +33,9 @@ resource "aws_lb_listener_rule" "service" {
 
 resource "aws_ecs_task_definition" "service" {
   family             = "${var.project_name}-${var.service_name}"
-  execution_role_arn = var.lab_role_arn 
-  task_role_arn      = var.lab_role_arn 
-  network_mode       = "bridge"         
+  execution_role_arn = var.lab_role_arn # Using LabRole for execution
+  task_role_arn      = var.lab_role_arn # Using LabRole for task permissions
+  network_mode       = "bridge"         # Bridge for EC2
   cpu                = var.cpu
   memory             = var.memory
 
@@ -49,7 +49,8 @@ resource "aws_ecs_task_definition" "service" {
       portMappings = [
         {
           containerPort = var.container_port
-          hostPort      = 0
+          hostPort      = 0 # Dynamic host port mapping
+          protocol      = "tcp"
         }
       ]
       logConfiguration = {
@@ -71,6 +72,7 @@ resource "aws_ecs_service" "service" {
   task_definition = aws_ecs_task_definition.service.arn
   desired_count   = var.desired_count
 
+  # Allow external changes (CI/CD) to task_definition and desired_count without drift
   lifecycle {
     ignore_changes = [task_definition, desired_count]
   }
