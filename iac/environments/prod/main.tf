@@ -15,7 +15,7 @@ terraform {
 module "networking" {
   source       = "../../modules/networking"
   project_name = var.project_name
-  vpc_cidr     = "10.2.0.0/16" 
+  vpc_cidr     = "10.2.0.0/16"
 }
 
 module "security" {
@@ -41,4 +41,11 @@ module "compute" {
   asg_min_size          = 1
   asg_max_size          = 2
   asg_desired_capacity  = 1
+}
+
+module "discovery" {
+  source         = "../../modules/discovery"
+  project_name   = var.project_name
+  vpc_id         = module.networking.vpc_id
+  namespace_name = "stockwiz.local"
 }

@@ -33,9 +33,9 @@ resource "aws_lb_listener_rule" "service" {
 
 resource "aws_ecs_task_definition" "service" {
   family             = "${var.project_name}-${var.service_name}"
-  execution_role_arn = var.lab_role_arn 
-  task_role_arn      = var.lab_role_arn 
-  network_mode       = "bridge"         
+  execution_role_arn = var.lab_role_arn # Using LabRole for execution
+  task_role_arn      = var.lab_role_arn # Using LabRole for task permissions
+  network_mode       = "bridge"         # Bridge for EC2
   cpu                = var.cpu
   memory             = var.memory
 
@@ -49,9 +49,11 @@ resource "aws_ecs_task_definition" "service" {
       portMappings = [
         {
           containerPort = var.container_port
-          hostPort      = 0
+          hostPort      = 0 # Dynamic host port mapping
+          protocol      = "tcp"
         }
       ]
+      environment = var.environment_variables
       logConfiguration = {
         logDriver = "awslogs"
         options = {
@@ -68,10 +70,10 @@ resource "aws_ecs_task_definition" "service" {
 resource "aws_ecs_service" "service" {
   name            = var.service_name
   cluster         = var.cluster_id
-  force_new_deployment = true
   task_definition = aws_ecs_task_definition.service.arn
   desired_count   = var.desired_count
 
+  # Allow external changes (CI/CD) to task_definition and desired_count without drift
   lifecycle {
     ignore_changes = [task_definition, desired_count]
   }

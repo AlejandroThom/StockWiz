@@ -17,7 +17,6 @@ variable "lab_instance_profile_name" {
 variable "lab_role_arn" {
   description = "ARN of the LabRole for ECS Task Execution"
   type        = string
-  default     = "arn:aws:iam::123456789012:role/LabRole" # Placeholder
 }
 
 variable "image_tag" {
