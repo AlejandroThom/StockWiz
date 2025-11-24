@@ -5,7 +5,7 @@ module "api_gateway" {
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
   alb_listener_arn       = module.alb.listener_arn
-  lab_role_arn           = var.lab_role_arn
+  lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/api-gateway"
   image_tag              = var.image_tag
@@ -21,7 +21,7 @@ module "product_service" {
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
   alb_listener_arn       = module.alb.listener_arn
-  lab_role_arn           = var.lab_role_arn
+  lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/product-service"
   image_tag              = var.image_tag
@@ -37,7 +37,7 @@ module "inventory_service" {
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
   alb_listener_arn       = module.alb.listener_arn
-  lab_role_arn           = var.lab_role_arn
+  lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/inventory-service"
   image_tag              = var.image_tag
