@@ -1,6 +1,8 @@
 name: "Prod CD"
 
 on:
+  pull_request:
+      branches: ["main"]
   release:
     types: [published]
   push:
