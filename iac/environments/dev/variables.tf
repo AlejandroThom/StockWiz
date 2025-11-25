@@ -14,11 +14,6 @@ variable "lab_instance_profile_name" {
   default     = "LabInstanceProfile"
 }
 
-variable "lab_role_arn" {
-  description = "ARN of the LabRole for ECS Task Execution"
-  type        = string
-}
-
 variable "image_tag" {
   description = "Tag of the container images to deploy"
   type        = string
