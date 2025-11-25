@@ -1,5 +1,5 @@
-resource "aws_service_discovery_private_dns_namespace" "main" {
-  name        = var.namespace_name
-  description = "Service discovery namespace for ${var.project_name}"
-  vpc         = var.vpc_id
+data "aws_service_discovery_dns_namespace" "main" {
+  name = var.namespace_name
+  type = "DNS_PRIVATE"
 }
+

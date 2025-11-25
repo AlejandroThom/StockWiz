@@ -12,9 +12,8 @@ resource "aws_service_discovery_service" "service" {
     routing_policy = "MULTIVALUE"
   }
 
-  health_check_custom_config {
-    failure_threshold = 1
-  }
+  # health_check_custom_config block removed as failure_threshold is deprecated and defaults to 1
+
 }
 
 resource "aws_ecs_task_definition" "service" {

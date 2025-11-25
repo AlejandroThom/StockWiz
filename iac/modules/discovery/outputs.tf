@@ -1,7 +1,7 @@
 output "namespace_id" {
-  value = aws_service_discovery_private_dns_namespace.main.id
+  value = data.aws_service_discovery_dns_namespace.main.id
 }
 
 output "namespace_name" {
-  value = aws_service_discovery_private_dns_namespace.main.name
+  value = data.aws_service_discovery_dns_namespace.main.name
 }
