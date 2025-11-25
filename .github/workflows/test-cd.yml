@@ -6,7 +6,7 @@ on:
     types: [completed]
     branches: ["dev"]
   push:
-    branches: ["test"]
+    branches: ["feature/*"]
   workflow_dispatch:
     inputs:
       commit_sha:
