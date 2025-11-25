@@ -68,10 +68,11 @@ resource "aws_ecs_task_definition" "service" {
 }
 
 resource "aws_ecs_service" "service" {
-  name            = var.service_name
-  cluster         = var.cluster_id
-  task_definition = aws_ecs_task_definition.service.arn
-  desired_count   = var.desired_count
+  name                 = var.service_name
+  cluster              = var.cluster_id
+  task_definition      = aws_ecs_task_definition.service.arn
+  desired_count        = var.desired_count
+  force_new_deployment = true
 
   # Allow external changes (CI/CD) to task_definition and desired_count without drift
   lifecycle {

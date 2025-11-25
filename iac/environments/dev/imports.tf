@@ -1,6 +1,6 @@
 import {
   to = module.compute.aws_ecs_capacity_provider.main
-  id = "stockwiz-dev-capacity-provider"
+  id = "arn:aws:ecs:us-east-1:381492128343:capacity-provider/stockwiz-dev-capacity-provider"
 }
 
 import {
