@@ -148,6 +148,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: List Service Discovery Namespaces
+        run: aws servicediscovery list-namespaces
+
       - name: Terraform Init
         working-directory: iac/environments/dev
         run: terraform init
