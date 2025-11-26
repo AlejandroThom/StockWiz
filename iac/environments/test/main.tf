@@ -43,9 +43,15 @@ module "compute" {
   asg_desired_capacity  = 1
 }
 
-module "discovery" {
-  source         = "../../modules/discovery"
-  project_name   = var.project_name
-  vpc_id         = module.networking.vpc_id
-  namespace_name = "stockwiz.local"
+module "db_redis" {
+  source            = "../../modules/db_redis"
+  project_name      = var.project_name
+  vpc_id            = module.networking.vpc_id
+  subnet_id         = module.networking.public_subnet_ids[0]
+  ecs_sg_id         = module.security.ecs_instances_sg_id
+  instance_type     = "t3.micro"
+  volume_size       = 20
+  postgres_user     = "admin"
+  postgres_password = "admin123"
+  postgres_db       = "microservices_db"
 }
