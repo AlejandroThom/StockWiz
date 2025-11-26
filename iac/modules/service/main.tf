@@ -106,6 +106,36 @@ resource "aws_ecs_service" "service" {
   }
 }
 
+resource "aws_appautoscaling_target" "service" {
+  count = var.enable_autoscaling ? 1 : 0
+
+  max_capacity       = var.autoscaling_max_capacity
+  min_capacity       = var.autoscaling_min_capacity
+  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "cpu_target" {
+  count = var.enable_autoscaling ? 1 : 0
+
+  name               = "${var.project_name}-${var.service_name}-cpu-target"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.service[count.index].resource_id
+  scalable_dimension = aws_appautoscaling_target.service[count.index].scalable_dimension
+  service_namespace  = aws_appautoscaling_target.service[count.index].service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = var.autoscaling_target_cpu
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
+
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+  }
+}
+
 resource "aws_cloudwatch_log_group" "service" {
   name              = "/ecs/${var.project_name}-${var.service_name}"
   retention_in_days = 7

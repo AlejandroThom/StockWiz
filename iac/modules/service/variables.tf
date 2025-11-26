@@ -2,6 +2,7 @@ variable "project_name" { type = string }
 variable "service_name" { type = string }
 variable "vpc_id" { type = string }
 variable "cluster_id" { type = string }
+variable "cluster_name" { type = string }
 variable "alb_listener_arn" {
   type        = string
   default     = null
@@ -44,6 +45,26 @@ variable "listener_rule_priority" {
 variable "desired_count" {
   type    = number
   default = 1
+}
+
+variable "enable_autoscaling" {
+  type    = bool
+  default = false
+}
+
+variable "autoscaling_min_capacity" {
+  type    = number
+  default = 1
+}
+
+variable "autoscaling_max_capacity" {
+  type    = number
+  default = 2
+}
+
+variable "autoscaling_target_cpu" {
+  type    = number
+  default = 60
 }
 
 variable "cpu" {

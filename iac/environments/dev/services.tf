@@ -10,6 +10,7 @@ module "api_gateway" {
   service_name           = "api-gateway"
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
+  cluster_name           = module.compute.cluster_name
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
@@ -20,7 +21,10 @@ module "api_gateway" {
   path_pattern           = "/*"
   listener_rule_priority = 100
   create_listener_rule   = true
-  desired_count          = 2
+  desired_count          = 1
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 1
+  autoscaling_max_capacity = 3
   environment_variables = [
     { name = "PRODUCT_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
     { name = "INVENTORY_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
@@ -34,6 +38,7 @@ module "product_service" {
   service_name           = "product-service"
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
+  cluster_name           = module.compute.cluster_name
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
@@ -44,7 +49,10 @@ module "product_service" {
   path_pattern           = "/products*"  # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority = 10
   create_listener_rule   = true
-  desired_count          = 2
+  desired_count          = 1
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 1
+  autoscaling_max_capacity = 2
   environment_variables = [
     { name = "DATABASE_URL", value = "postgresql://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db" },
     { name = "REDIS_URL", value = "redis://${module.db_redis.private_ip}:6379" }
@@ -57,6 +65,7 @@ module "inventory_service" {
   service_name           = "inventory-service"
   vpc_id                 = module.networking.vpc_id
   cluster_id             = module.compute.cluster_id
+  cluster_name           = module.compute.cluster_name
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
@@ -67,7 +76,10 @@ module "inventory_service" {
   path_pattern           = "/inventory*"  # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority = 20
   create_listener_rule   = true
-  desired_count          = 2
+  desired_count          = 1
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 1
+  autoscaling_max_capacity = 2
   environment_variables = [
     { name = "DATABASE_URL", value = "postgres://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db?sslmode=disable" },
     { name = "REDIS_URL", value = "${module.db_redis.private_ip}:6379" }
