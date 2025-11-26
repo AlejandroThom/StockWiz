@@ -7,6 +7,12 @@ variable "alb_listener_arn" {
   default     = null
   description = "ARN of the ALB listener (null to skip listener rule creation)"
 }
+
+variable "create_listener_rule" {
+  type        = bool
+  default     = false
+  description = "Whether to create an ALB listener rule for this service"
+}
 variable "lab_role_arn" { type = string }
 variable "aws_region" { type = string }
 

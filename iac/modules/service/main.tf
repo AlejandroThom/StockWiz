@@ -16,7 +16,7 @@ resource "aws_lb_target_group" "service" {
 }
 
 resource "aws_lb_listener_rule" "service" {
-  count = var.alb_listener_arn != null && var.path_pattern != null && var.listener_rule_priority != null ? 1 : 0
+  count = var.create_listener_rule ? 1 : 0
 
   listener_arn = var.alb_listener_arn
   priority     = var.listener_rule_priority
