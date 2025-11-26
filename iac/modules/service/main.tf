@@ -8,11 +8,15 @@ resource "aws_lb_target_group" "service" {
   health_check {
     path                = var.health_check_path
     healthy_threshold   = 2
-    unhealthy_threshold = 10
+    unhealthy_threshold = 3
     timeout             = 5
-    interval            = 30
+    interval            = 15
     matcher             = "200"
+    protocol            = "HTTP"
   }
+  
+  # Connection draining para evitar cortar conexiones activas
+  deregistration_delay = 30
 }
 
 resource "aws_lb_listener_rule" "service" {
@@ -78,6 +82,17 @@ resource "aws_ecs_service" "service" {
   task_definition      = aws_ecs_task_definition.service.arn
   desired_count        = var.desired_count
   force_new_deployment = true
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  deployment_controller {
+    type = "ECS"
+  }
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   # Allow external changes (CI/CD) to task_definition and desired_count without drift
   lifecycle {

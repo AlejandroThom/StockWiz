@@ -20,6 +20,7 @@ module "api_gateway" {
   path_pattern           = "/*"
   listener_rule_priority = 100
   create_listener_rule   = true
+  desired_count          = 2
   environment_variables = [
     { name = "PRODUCT_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
     { name = "INVENTORY_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
@@ -43,6 +44,7 @@ module "product_service" {
   path_pattern           = "/products*"  # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority = 10
   create_listener_rule   = true
+  desired_count          = 2
   environment_variables = [
     { name = "DATABASE_URL", value = "postgresql://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db" },
     { name = "REDIS_URL", value = "redis://${module.db_redis.private_ip}:6379" }
@@ -65,6 +67,7 @@ module "inventory_service" {
   path_pattern           = "/inventory*"  # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority = 20
   create_listener_rule   = true
+  desired_count          = 2
   environment_variables = [
     { name = "DATABASE_URL", value = "postgres://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db?sslmode=disable" },
     { name = "REDIS_URL", value = "${module.db_redis.private_ip}:6379" }
