@@ -54,14 +54,14 @@ jobs:
       matrix:
         include:
           - name: api-gateway
-            context: StockWiz/api-gateway
-            dockerfile: StockWiz/api-gateway/Dockerfile
+            context: ./api-gateway
+            dockerfile: ./api-gateway/Dockerfile
           - name: product-service
-            context: StockWiz/product-service
-            dockerfile: StockWiz/product-service/Dockerfile
+            context: ./product-service
+            dockerfile: ./product-service/Dockerfile
           - name: inventory-service
-            context: StockWiz/inventory-service
-            dockerfile: StockWiz/inventory-service/Dockerfile
+            context: ./inventory-service
+            dockerfile: ./inventory-service/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v4
