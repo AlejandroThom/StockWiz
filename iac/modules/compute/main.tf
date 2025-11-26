@@ -27,9 +27,9 @@ resource "aws_ecs_capacity_provider" "main" {
       target_capacity           = 100
       instance_warmup_period    = 120
     }
-  }
 
-  managed_termination_protection = "ENABLED"
+    managed_termination_protection = "ENABLED"
+  }
 }
 
 resource "aws_autoscaling_group" "main" {
