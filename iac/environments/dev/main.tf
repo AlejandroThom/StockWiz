@@ -39,7 +39,7 @@ module "compute" {
   ecs_sg_id             = module.security.ecs_instances_sg_id
   instance_profile_name = var.lab_instance_profile_name
   asg_min_size          = 1
-  asg_max_size          = 2
+  asg_max_size          = 4
   asg_desired_capacity  = 1
 }
 

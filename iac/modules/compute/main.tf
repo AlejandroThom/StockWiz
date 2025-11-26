@@ -25,8 +25,11 @@ resource "aws_ecs_capacity_provider" "main" {
       minimum_scaling_step_size = 1
       status                    = "ENABLED"
       target_capacity           = 100
+      instance_warmup_period    = 120
     }
   }
+
+  managed_termination_protection = "ENABLED"
 }
 
 resource "aws_autoscaling_group" "main" {
