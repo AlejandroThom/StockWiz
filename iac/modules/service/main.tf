@@ -49,7 +49,7 @@ resource "aws_ecs_task_definition" "service" {
       portMappings = [
         {
           containerPort = var.container_port
-          hostPort      = 0 # Dynamic host port mapping
+          hostPort      = var.container_port
           protocol      = "tcp"
         }
       ]
