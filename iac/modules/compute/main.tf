@@ -33,11 +33,12 @@ resource "aws_ecs_capacity_provider" "main" {
 }
 
 resource "aws_autoscaling_group" "main" {
-  name                = "${var.project_name}-asg"
-  vpc_zone_identifier = var.subnet_ids
-  min_size            = var.asg_min_size
-  max_size            = var.asg_max_size
-  desired_capacity    = var.asg_desired_capacity
+  name                  = "${var.project_name}-asg"
+  vpc_zone_identifier   = var.subnet_ids
+  min_size              = var.asg_min_size
+  max_size              = var.asg_max_size
+  desired_capacity      = var.asg_desired_capacity
+  protect_from_scale_in = true
 
   launch_template {
     id      = aws_launch_template.main.id
