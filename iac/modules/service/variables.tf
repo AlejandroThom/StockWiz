@@ -2,7 +2,11 @@ variable "project_name" { type = string }
 variable "service_name" { type = string }
 variable "vpc_id" { type = string }
 variable "cluster_id" { type = string }
-variable "alb_listener_arn" { type = string }
+variable "alb_listener_arn" {
+  type        = string
+  default     = null
+  description = "ARN of the ALB listener (null to skip listener rule creation)"
+}
 variable "lab_role_arn" { type = string }
 variable "aws_region" { type = string }
 
@@ -16,7 +20,8 @@ variable "container_port" {
 
 variable "path_pattern" {
   type        = string
-  description = "Path pattern for ALB routing (e.g. /api/products*)"
+  default     = null
+  description = "Path pattern for ALB routing (e.g. /api/products*). Null to skip listener rule creation."
 }
 
 variable "health_check_path" {
@@ -26,7 +31,8 @@ variable "health_check_path" {
 
 variable "listener_rule_priority" {
   type        = number
-  description = "Priority for the ALB listener rule (must be unique)"
+  default     = null
+  description = "Priority for the ALB listener rule (must be unique). Null to skip listener rule creation."
 }
 
 variable "desired_count" {
