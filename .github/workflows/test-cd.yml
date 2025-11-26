@@ -77,19 +77,19 @@ jobs:
       - name: Pull Dev images
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }}
+            docker pull ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }}
           done
       - name: Retag for Test
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
-            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+            docker tag ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker tag ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-latest
           done
       - name: Push Test tags
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+            docker push ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker push ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-latest
           done
 
   deploy_test:
@@ -143,8 +143,8 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          k6 run tests/products/api-gatewayload-test-products.js
+          k6 run Tests/Load/api-gateway-load-test-products.js
 
-      - name: Run Product Load Test
+      - name: Run Product Detail Load Test
         run: |
-          k6 run tests/products/load-test-products.js
+          k6 run Tests/Load/api-gateway-product-detail-load-test.js

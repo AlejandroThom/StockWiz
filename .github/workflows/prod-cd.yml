@@ -90,7 +90,7 @@ jobs:
         run: |
           set -e
           for svc in api-gateway product-service inventory-service; do
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.resolve.outputs.commit_sha }}
+            docker pull ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.resolve.outputs.commit_sha }}
           done
 
   deploy_prod:

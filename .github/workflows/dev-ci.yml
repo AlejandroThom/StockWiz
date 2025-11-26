@@ -84,7 +84,7 @@ jobs:
         if: ${{ hashFiles(matrix.dockerfile) != '' }}
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}
+          images: ${{ env.REGISTRY }}/alejandrothom/stockwiz/${{ matrix.name }}
           tags: |
             type=raw,value=dev-${{ github.sha }}
             type=raw,value=dev-latest
