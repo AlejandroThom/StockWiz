@@ -16,7 +16,7 @@ module "api_gateway" {
   image_repo             = "ghcr.io/alejandrothom/stockwiz/api-gateway"
   image_tag              = var.image_tag
   container_port         = 8000
-  memory                 = 128
+  memory                 = 256
   path_pattern           = "/*"
   listener_rule_priority = 100
   create_listener_rule   = true
