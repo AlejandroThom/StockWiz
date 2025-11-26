@@ -15,7 +15,7 @@ module "api_gateway" {
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/api-gateway"
   image_tag              = var.image_tag
-  container_port         = 8080
+  container_port         = 8000
   path_pattern           = "/*"
   listener_rule_priority = 100
   environment_variables = [
@@ -36,7 +36,7 @@ module "product_service" {
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/product-service"
   image_tag              = var.image_tag
-  container_port         = 8081
+  container_port         = 8001
   path_pattern           = "/api/products*"
   listener_rule_priority = 10
   environment_variables = [
@@ -56,7 +56,7 @@ module "inventory_service" {
   aws_region             = var.aws_region
   image_repo             = "ghcr.io/mathias/obligatorio-devops/inventory-service"
   image_tag              = var.image_tag
-  container_port         = 8082
+  container_port         = 8002
   path_pattern           = "/api/inventory*"
   listener_rule_priority = 20
   environment_variables = [
