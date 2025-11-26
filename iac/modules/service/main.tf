@@ -54,6 +54,9 @@ resource "aws_ecs_task_definition" "service" {
         }
       ]
       environment = var.environment_variables
+      repositoryCredentials = var.repository_credentials_secret_arn != null ? {
+        credentialsParameter = var.repository_credentials_secret_arn
+      } : null
       logConfiguration = {
         logDriver = "awslogs"
         options = {

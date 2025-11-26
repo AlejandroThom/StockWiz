@@ -13,7 +13,7 @@ module "api_gateway" {
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
-  image_repo             = "ghcr.io/mathias/obligatorio-devops/api-gateway"
+  image_repo             = "ghcr.io/AlejandroThom/StockWiz/api-gateway"
   image_tag              = var.image_tag
   container_port         = 8000
   memory                 = 128
@@ -35,7 +35,7 @@ module "product_service" {
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
-  image_repo             = "ghcr.io/mathias/obligatorio-devops/product-service"
+  image_repo             = "ghcr.io/AlejandroThom/StockWiz/product-service"
   image_tag              = var.image_tag
   container_port         = 8001
   memory                 = 256
@@ -56,7 +56,7 @@ module "inventory_service" {
   alb_listener_arn       = module.alb.listener_arn
   lab_role_arn           = data.aws_iam_role.lab_role.arn
   aws_region             = var.aws_region
-  image_repo             = "ghcr.io/mathias/obligatorio-devops/inventory-service"
+  image_repo             = "ghcr.io/AlejandroThom/StockWiz/inventory-service"
   image_tag              = var.image_tag
   container_port         = 8002
   memory                 = 256

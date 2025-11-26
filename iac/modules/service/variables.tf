@@ -51,3 +51,9 @@ variable "environment_variables" {
   }))
   default = []
 }
+
+variable "repository_credentials_secret_arn" {
+  type        = string
+  default     = null
+  description = "ARN of the AWS Secrets Manager secret containing Docker registry credentials (for private repos like GHCR)"
+}
