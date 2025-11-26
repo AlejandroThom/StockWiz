@@ -8,7 +8,7 @@ data "aws_subnet" "this" {
 
 resource "aws_security_group" "db" {
   name        = "${var.project_name}-db-redis-sg"
-  description = "Allow Postgres (5432) and Redis (6379) from ECS instances"
+  description = "Allow Postgres (5432) and Redis (6379) from ECS instances, SSH for debugging"
   vpc_id      = var.vpc_id
 
   ingress {
@@ -25,6 +25,15 @@ resource "aws_security_group" "db" {
     to_port         = 6379
     protocol        = "tcp"
     security_groups = [var.ecs_sg_id]
+  }
+
+  # Allow SSH for debugging (Dev only - restrict in prod)
+  ingress {
+    description = "SSH from anywhere (Dev only)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -51,7 +60,8 @@ resource "aws_instance" "db_redis" {
   subnet_id                   = var.subnet_id
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.db.id]
-  key_name                    = var.key_name
+  # key_name is optional - if not provided, use EC2 Instance Connect
+  key_name                    = var.key_name != null ? var.key_name : null
 
   user_data = <<-EOF
               #!/bin/bash
