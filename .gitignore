@@ -55,3 +55,7 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Lambda deployment packages
+*.zip
+!iac/modules/discord_notifier/lambda_function.zip
+

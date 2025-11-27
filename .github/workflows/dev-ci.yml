@@ -157,7 +157,52 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/dev
         run: |
-          terraform apply -auto-approve
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            terraform apply -auto-approve \
+              -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
+          else
+            terraform apply -auto-approve
+          fi
+
+      - name: Get ALB DNS Name
+        id: alb_dns
+        working-directory: iac/environments/dev
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Notify Discord on Success
+        if: success() && steps.alb_dns.outcome == 'success'
+        working-directory: iac/environments/dev
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --payload "{\"environment\":\"dev\",\"status\":\"success\",\"message\":\"Deployment completed successfully\",\"alb_dns\":\"${{ steps.alb_dns.outputs.alb_dns }}\",\"commit_sha\":\"${{ github.sha }}\"}" \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          else
+            echo "Discord notifier not configured, skipping notification"
+          fi
+        continue-on-error: true
+
+      - name: Notify Discord on Failure
+        if: failure()
+        working-directory: iac/environments/dev
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --payload "{\"environment\":\"dev\",\"status\":\"failure\",\"message\":\"Deployment failed. Check GitHub Actions logs for details.\",\"commit_sha\":\"${{ github.sha }}\"}" \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          fi
+        continue-on-error: true
 
   load_tests:
     name: Run k6 load tests

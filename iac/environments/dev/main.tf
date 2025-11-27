@@ -56,3 +56,12 @@ module "db_redis" {
   postgres_password = "admin123"
   postgres_db       = "microservices_db"
 }
+
+module "discord_notifier" {
+  count = var.discord_webhook_url != "" ? 1 : 0
+
+  source            = "../../modules/discord_notifier"
+  project_name      = var.project_name
+  discord_webhook_url = var.discord_webhook_url
+  environment       = "dev"
+}

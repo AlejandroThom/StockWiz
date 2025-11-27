@@ -120,6 +120,53 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/prod
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
-            -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            terraform apply -auto-approve \
+              -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
+              -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}" \
+              -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
+          else
+            terraform apply -auto-approve \
+              -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
+              -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
+          fi
+
+      - name: Get ALB DNS Name
+        id: alb_dns
+        working-directory: iac/environments/prod
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Notify Discord on Success
+        if: success() && steps.alb_dns.outcome == 'success'
+        working-directory: iac/environments/prod
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --payload "{\"environment\":\"prod\",\"status\":\"success\",\"message\":\"Production deployment completed successfully\",\"alb_dns\":\"${{ steps.alb_dns.outputs.alb_dns }}\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          else
+            echo "Discord notifier not configured, skipping notification"
+          fi
+        continue-on-error: true
+
+      - name: Notify Discord on Failure
+        if: failure()
+        working-directory: iac/environments/prod
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --payload "{\"environment\":\"prod\",\"status\":\"failure\",\"message\":\"Production deployment failed. Check GitHub Actions logs for details.\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          fi
+        continue-on-error: true
