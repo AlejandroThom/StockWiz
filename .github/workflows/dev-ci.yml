@@ -1,10 +1,10 @@
-name: Dev CI/CD - SonarCloud Quality Gate
+name: Dev CI/CD - SonarCloud Quality Gate.
 
 on:
   push:
-    branches: ["dev", "main", "feature/**"]
+    branches: ["dev", "feature/**"]
   pull_request:
-    branches: ["dev", "main"]
+    branches: ["dev"]
   workflow_dispatch:
     inputs:
       run_deploy:
@@ -54,14 +54,14 @@ jobs:
       matrix:
         include:
           - name: api-gateway
-            context: StockWiz/api-gateway
-            dockerfile: StockWiz/api-gateway/Dockerfile
+            context: ./api-gateway
+            dockerfile: ./api-gateway/Dockerfile
           - name: product-service
-            context: StockWiz/product-service
-            dockerfile: StockWiz/product-service/Dockerfile
+            context: ./product-service
+            dockerfile: ./product-service/Dockerfile
           - name: inventory-service
-            context: StockWiz/inventory-service
-            dockerfile: StockWiz/inventory-service/Dockerfile
+            context: ./inventory-service
+            dockerfile: ./inventory-service/Dockerfile
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -84,7 +84,7 @@ jobs:
         if: ${{ hashFiles(matrix.dockerfile) != '' }}
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.name }}
+          images: ${{ env.REGISTRY }}/alejandrothom/stockwiz/${{ matrix.name }}
           tags: |
             type=raw,value=dev-${{ github.sha }}
             type=raw,value=dev-latest
@@ -102,7 +102,6 @@ jobs:
   bootstrap:
     name: Bootstrap infrastructure
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -129,8 +128,8 @@ jobs:
   deploy_dev:
     name: Deploy to Dev
     runs-on: ubuntu-latest
-    needs: build
-    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && inputs.run_deploy) }}
+    needs:  build
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && inputs.run_deploy)}}
     environment:
       name: dev
     steps:
@@ -148,6 +147,9 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: List Service Discovery Namespaces
+        run: aws servicediscovery list-namespaces
+
       - name: Terraform Init
         working-directory: iac/environments/dev
         run: terraform init
@@ -155,7 +157,67 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/dev
         run: |
-          terraform apply -auto-approve
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            terraform apply -auto-approve \
+              -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
+          else
+            terraform apply -auto-approve
+          fi
+
+      - name: Get ALB DNS Name
+        id: alb_dns
+        working-directory: iac/environments/dev
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Notify Discord on Success
+        if: success() && steps.alb_dns.outcome == 'success'
+        working-directory: iac/environments/dev
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            jq -n \
+              --arg env "dev" \
+              --arg status "success" \
+              --arg message "Deployment completed successfully" \
+              --arg alb_dns "${{ steps.alb_dns.outputs.alb_dns }}" \
+              --arg commit "${{ github.sha }}" \
+              '{environment: $env, status: $status, message: $message, alb_dns: $alb_dns, commit_sha: $commit}' > /tmp/lambda-payload.json
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
+              --payload file:///tmp/lambda-payload.json \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          else
+            echo "Discord notifier not configured, skipping notification"
+          fi
+        continue-on-error: true
+
+      - name: Notify Discord on Failure
+        if: failure()
+        working-directory: iac/environments/dev
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            jq -n \
+              --arg env "dev" \
+              --arg status "failure" \
+              --arg message "Deployment failed. Check GitHub Actions logs for details." \
+              --arg commit "${{ github.sha }}" \
+              '{environment: $env, status: $status, message: $message, commit_sha: $commit}' > /tmp/lambda-payload.json
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
+              --payload file:///tmp/lambda-payload.json \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          fi
+        continue-on-error: true
 
   load_tests:
     name: Run k6 load tests
@@ -179,7 +241,7 @@ jobs:
         run: |
           k6 run Tests/Load/api-gateway-load-test-products.js
 
-      - name: Run Product Load Test
+      - name: Run Product Load Test2
         run: |
           k6 run Tests/Load/api-gateway-product-detail-load-test.js
 

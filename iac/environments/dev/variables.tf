@@ -14,13 +14,15 @@ variable "lab_instance_profile_name" {
   default     = "LabInstanceProfile"
 }
 
-variable "lab_role_arn" {
-  description = "ARN of the LabRole for ECS Task Execution"
-  type        = string
-}
-
 variable "image_tag" {
   description = "Tag of the container images to deploy"
   type        = string
   default     = "dev-latest"
+}
+
+variable "discord_webhook_url" {
+  description = "Discord webhook URL for deployment notifications (optional)"
+  type        = string
+  default     = ""
+  sensitive   = true
 }

@@ -6,7 +6,7 @@ on:
     types: [completed]
     branches: ["dev"]
   push:
-    branches: ["test"]
+    branches: ["feature/*"]
   workflow_dispatch:
     inputs:
       commit_sha:
@@ -77,19 +77,19 @@ jobs:
       - name: Pull Dev images
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }}
+            docker pull ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }}
           done
       - name: Retag for Test
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
-            docker tag ${{ env.REGISTRY }}/${{ github.repository }}/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+            docker tag ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker tag ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:${{ needs.prepare.outputs.image_tag }} ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-latest
           done
       - name: Push Test tags
         run: |
           for svc in api-gateway product-service inventory-service; do
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-${{ needs.prepare.outputs.commit_sha }}
-            docker push ${{ env.REGISTRY }}/${{ github.repository }}/$svc:test-latest
+            docker push ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.prepare.outputs.commit_sha }}
+            docker push ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-latest
           done
 
   deploy_test:
@@ -119,9 +119,71 @@ jobs:
       - name: Terraform Apply
         working-directory: iac/environments/test
         run: |
-          terraform apply -auto-approve \
-            -var="image_tag=test-${{ needs.prepare.outputs.commit_sha }}" \
-            -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
+          if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
+            terraform apply -auto-approve \
+              -var="image_tag=test-${{ needs.prepare.outputs.commit_sha }}" \
+              -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}" \
+              -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
+          else
+            terraform apply -auto-approve \
+              -var="image_tag=test-${{ needs.prepare.outputs.commit_sha }}" \
+              -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
+          fi
+
+      - name: Get ALB DNS Name
+        id: alb_dns
+        working-directory: iac/environments/test
+        run: |
+          ALB_DNS=$(terraform output -raw alb_dns_name)
+          echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
+        continue-on-error: true
+
+      - name: Notify Discord on Success
+        if: success() && steps.alb_dns.outcome == 'success'
+        working-directory: iac/environments/test
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            jq -n \
+              --arg env "test" \
+              --arg status "success" \
+              --arg message "Deployment completed successfully" \
+              --arg alb_dns "${{ steps.alb_dns.outputs.alb_dns }}" \
+              --arg commit "${{ needs.prepare.outputs.commit_sha }}" \
+              '{environment: $env, status: $status, message: $message, alb_dns: $alb_dns, commit_sha: $commit}' > /tmp/lambda-payload.json
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
+              --payload file:///tmp/lambda-payload.json \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          else
+            echo "Discord notifier not configured, skipping notification"
+          fi
+        continue-on-error: true
+
+      - name: Notify Discord on Failure
+        if: failure()
+        working-directory: iac/environments/test
+        run: |
+          FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
+          if [ -n "$FUNCTION_NAME" ]; then
+            jq -n \
+              --arg env "test" \
+              --arg status "failure" \
+              --arg message "Deployment failed. Check GitHub Actions logs for details." \
+              --arg commit "${{ needs.prepare.outputs.commit_sha }}" \
+              '{environment: $env, status: $status, message: $message, commit_sha: $commit}' > /tmp/lambda-payload.json
+            aws lambda invoke \
+              --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
+              --payload file:///tmp/lambda-payload.json \
+              --region us-east-1 \
+              /tmp/lambda-response.json
+            cat /tmp/lambda-response.json
+          fi
+        continue-on-error: true
 
   load_tests:
     name: Run k6 load tests
@@ -143,8 +205,8 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          k6 run tests/products/api-gatewayload-test-products.js
+          k6 run Tests/Load/api-gateway-load-test-products.js
 
-      - name: Run Product Load Test
+      - name: Run Product Detail Load Test
         run: |
-          k6 run tests/products/load-test-products.js
+          k6 run Tests/Load/api-gateway-product-detail-load-test.js

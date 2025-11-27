@@ -4,10 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "obligatorio-devops-tf-state-123"
+    bucket         = "alejandrothom-stockwiz-tf-state"
     key            = "dev/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "obligatorio-devops-tf-locks-123"
+    dynamodb_table = "alejandrothom-stockwiz-tf-locks"
     encrypt        = true
   }
 }
@@ -38,14 +38,31 @@ module "compute" {
   subnet_ids            = module.networking.public_subnet_ids
   ecs_sg_id             = module.security.ecs_instances_sg_id
   instance_profile_name = var.lab_instance_profile_name
+  instance_type         = "t3.small"
   asg_min_size          = 1
-  asg_max_size          = 2
-  asg_desired_capacity  = 1
+  asg_max_size          = 4
+  asg_desired_capacity  = 2
 }
 
-module "discovery" {
-  source         = "../../modules/discovery"
-  project_name   = var.project_name
-  vpc_id         = module.networking.vpc_id
-  namespace_name = "stockwiz.local"
+module "db_redis" {
+  source            = "../../modules/db_redis"
+  project_name      = var.project_name
+  vpc_id            = module.networking.vpc_id
+  subnet_id         = module.networking.public_subnet_ids[0]
+  ecs_sg_id         = module.security.ecs_instances_sg_id
+  instance_type     = "t3.micro"
+  volume_size       = 20
+  postgres_user     = "admin"
+  postgres_password = "admin123"
+  postgres_db       = "microservices_db"
+}
+
+module "discord_notifier" {
+  count = var.discord_webhook_url != "" ? 1 : 0
+
+  source            = "../../modules/discord_notifier"
+  project_name      = var.project_name
+  discord_webhook_url = var.discord_webhook_url
+  environment       = "dev"
+  lab_role_arn      = data.aws_iam_role.lab_role.arn
 }

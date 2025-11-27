@@ -2,7 +2,18 @@ variable "project_name" { type = string }
 variable "service_name" { type = string }
 variable "vpc_id" { type = string }
 variable "cluster_id" { type = string }
-variable "alb_listener_arn" { type = string }
+variable "cluster_name" { type = string }
+variable "alb_listener_arn" {
+  type        = string
+  default     = null
+  description = "ARN of the ALB listener (null to skip listener rule creation)"
+}
+
+variable "create_listener_rule" {
+  type        = bool
+  default     = false
+  description = "Whether to create an ALB listener rule for this service"
+}
 variable "lab_role_arn" { type = string }
 variable "aws_region" { type = string }
 
@@ -16,7 +27,8 @@ variable "container_port" {
 
 variable "path_pattern" {
   type        = string
-  description = "Path pattern for ALB routing (e.g. /api/products*)"
+  default     = null
+  description = "Path pattern for ALB routing (e.g. /api/products*). Null to skip listener rule creation."
 }
 
 variable "health_check_path" {
@@ -26,12 +38,33 @@ variable "health_check_path" {
 
 variable "listener_rule_priority" {
   type        = number
-  description = "Priority for the ALB listener rule (must be unique)"
+  default     = null
+  description = "Priority for the ALB listener rule (must be unique). Null to skip listener rule creation."
 }
 
 variable "desired_count" {
   type    = number
   default = 1
+}
+
+variable "enable_autoscaling" {
+  type    = bool
+  default = false
+}
+
+variable "autoscaling_min_capacity" {
+  type    = number
+  default = 1
+}
+
+variable "autoscaling_max_capacity" {
+  type    = number
+  default = 2
+}
+
+variable "autoscaling_target_cpu" {
+  type    = number
+  default = 60
 }
 
 variable "cpu" {
@@ -50,4 +83,16 @@ variable "environment_variables" {
     value = string
   }))
   default = []
+}
+
+variable "repository_credentials_secret_arn" {
+  type        = string
+  default     = null
+  description = "ARN of the AWS Secrets Manager secret containing Docker registry credentials (for private repos like GHCR)"
+}
+
+variable "health_check_grace_period_seconds" {
+  type        = number
+  default     = 0
+  description = "Seconds to ignore failing load balancer health checks on new tasks"
 }

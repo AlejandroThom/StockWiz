@@ -25,3 +25,10 @@ variable "image_tag" {
   type        = string
   default     = "test-latest"
 }
+
+variable "discord_webhook_url" {
+  description = "Discord webhook URL for deployment notifications (optional)"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
