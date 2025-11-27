@@ -144,9 +144,16 @@ jobs:
         run: |
           FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
           if [ -n "$FUNCTION_NAME" ]; then
-            echo "{\"environment\":\"test\",\"status\":\"success\",\"message\":\"Deployment completed successfully\",\"alb_dns\":\"${{ steps.alb_dns.outputs.alb_dns }}\",\"commit_sha\":\"${{ needs.prepare.outputs.commit_sha }}\"}" > /tmp/lambda-payload.json
+            jq -n \
+              --arg env "test" \
+              --arg status "success" \
+              --arg message "Deployment completed successfully" \
+              --arg alb_dns "${{ steps.alb_dns.outputs.alb_dns }}" \
+              --arg commit "${{ needs.prepare.outputs.commit_sha }}" \
+              '{environment: $env, status: $status, message: $message, alb_dns: $alb_dns, commit_sha: $commit}' > /tmp/lambda-payload.json
             aws lambda invoke \
               --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
               --payload file:///tmp/lambda-payload.json \
               --region us-east-1 \
               /tmp/lambda-response.json
@@ -162,9 +169,15 @@ jobs:
         run: |
           FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
           if [ -n "$FUNCTION_NAME" ]; then
-            echo "{\"environment\":\"test\",\"status\":\"failure\",\"message\":\"Deployment failed. Check GitHub Actions logs for details.\",\"commit_sha\":\"${{ needs.prepare.outputs.commit_sha }}\"}" > /tmp/lambda-payload.json
+            jq -n \
+              --arg env "test" \
+              --arg status "failure" \
+              --arg message "Deployment failed. Check GitHub Actions logs for details." \
+              --arg commit "${{ needs.prepare.outputs.commit_sha }}" \
+              '{environment: $env, status: $status, message: $message, commit_sha: $commit}' > /tmp/lambda-payload.json
             aws lambda invoke \
               --function-name "$FUNCTION_NAME" \
+              --cli-binary-format raw-in-base64-out \
               --payload file:///tmp/lambda-payload.json \
               --region us-east-1 \
               /tmp/lambda-response.json
