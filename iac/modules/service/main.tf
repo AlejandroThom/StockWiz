@@ -14,7 +14,7 @@ resource "aws_lb_target_group" "service" {
     matcher             = "200"
     protocol            = "HTTP"
   }
-  
+
   # Connection draining para evitar cortar conexiones activas
   deregistration_delay = 30
 }
@@ -77,12 +77,12 @@ resource "aws_ecs_task_definition" "service" {
 }
 
 resource "aws_ecs_service" "service" {
-  name                 = var.service_name
-  cluster              = var.cluster_id
-  task_definition      = aws_ecs_task_definition.service.arn
-  desired_count        = var.desired_count
-  launch_type          = "EC2"
-  force_new_deployment = true
+  name                               = var.service_name
+  cluster                            = var.cluster_id
+  task_definition                    = aws_ecs_task_definition.service.arn
+  desired_count                      = var.desired_count
+  launch_type                        = "EC2"
+  force_new_deployment               = true
   deployment_minimum_healthy_percent = 100
   deployment_maximum_percent         = 200
 
@@ -105,6 +105,8 @@ resource "aws_ecs_service" "service" {
     container_name   = var.service_name
     container_port   = var.container_port
   }
+
+  health_check_grace_period_seconds = var.health_check_grace_period_seconds
 }
 
 resource "aws_appautoscaling_target" "service" {

@@ -90,3 +90,9 @@ variable "repository_credentials_secret_arn" {
   default     = null
   description = "ARN of the AWS Secrets Manager secret containing Docker registry credentials (for private repos like GHCR)"
 }
+
+variable "health_check_grace_period_seconds" {
+  type        = number
+  default     = 0
+  description = "Seconds to ignore failing load balancer health checks on new tasks"
+}
