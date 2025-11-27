@@ -1,6 +1,9 @@
 # PDF files
 *.pdf
 
+# Text files
+*.txt
+
 # Terraform
 .terraform/
 *.tfstate

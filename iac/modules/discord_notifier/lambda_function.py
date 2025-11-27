@@ -86,7 +86,13 @@ def lambda_handler(event, context):
         req = urllib.request.Request(
             webhook_url,
             data=json.dumps(payload).encode('utf-8'),
-            headers={'Content-Type': 'application/json'}
+            headers={
+                'Content-Type': 'application/json',
+                # Use a browser-like User-Agent to avoid Discord/Cloudflare blocking the Lambda
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                              'AppleWebKit/537.36 (KHTML, like Gecko) '
+                              'Chrome/91.0.4472.124 Safari/537.36'
+            }
         )
         
         with urllib.request.urlopen(req, timeout=10) as response:
