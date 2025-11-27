@@ -2,9 +2,9 @@ name: Dev CI/CD - SonarCloud Quality Gate.
 
 on:
   push:
-    branches: ["dev", "feature/**"]
+    branches: ["main", "feature/**"]
   pull_request:
-    branches: ["dev"]
+    branches: ["main"]
   workflow_dispatch:
     inputs:
       run_deploy:
@@ -129,7 +129,7 @@ jobs:
     name: Deploy to Dev
     runs-on: ubuntu-latest
     needs:  build
-    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/dev' || (github.event_name == 'workflow_dispatch' && inputs.run_deploy)}}
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' || (github.event_name == 'workflow_dispatch' && inputs.run_deploy)}}
     environment:
       name: dev
     steps:
