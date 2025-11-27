@@ -145,9 +145,10 @@ jobs:
         run: |
           FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
           if [ -n "$FUNCTION_NAME" ]; then
+            echo "{\"environment\":\"prod\",\"status\":\"success\",\"message\":\"Production deployment completed successfully\",\"alb_dns\":\"${{ steps.alb_dns.outputs.alb_dns }}\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" > /tmp/lambda-payload.json
             aws lambda invoke \
               --function-name "$FUNCTION_NAME" \
-              --payload "{\"environment\":\"prod\",\"status\":\"success\",\"message\":\"Production deployment completed successfully\",\"alb_dns\":\"${{ steps.alb_dns.outputs.alb_dns }}\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" \
+              --payload file:///tmp/lambda-payload.json \
               --region us-east-1 \
               /tmp/lambda-response.json
             cat /tmp/lambda-response.json
@@ -162,9 +163,10 @@ jobs:
         run: |
           FUNCTION_NAME=$(terraform output -raw discord_notifier_function_name 2>/dev/null || echo "")
           if [ -n "$FUNCTION_NAME" ]; then
+            echo "{\"environment\":\"prod\",\"status\":\"failure\",\"message\":\"Production deployment failed. Check GitHub Actions logs for details.\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" > /tmp/lambda-payload.json
             aws lambda invoke \
               --function-name "$FUNCTION_NAME" \
-              --payload "{\"environment\":\"prod\",\"status\":\"failure\",\"message\":\"Production deployment failed. Check GitHub Actions logs for details.\",\"commit_sha\":\"${{ needs.resolve.outputs.commit_sha }}\"}" \
+              --payload file:///tmp/lambda-payload.json \
               --region us-east-1 \
               /tmp/lambda-response.json
             cat /tmp/lambda-response.json
