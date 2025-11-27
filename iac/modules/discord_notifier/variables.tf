@@ -14,3 +14,8 @@ variable "environment" {
   description = "Environment name (dev, test, prod)"
 }
 
+variable "lab_role_arn" {
+  type        = string
+  description = "ARN of the existing LabRole to use for Lambda execution"
+}
+

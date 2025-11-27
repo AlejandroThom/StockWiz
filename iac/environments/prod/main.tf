@@ -56,6 +56,10 @@ module "db_redis" {
   postgres_db       = "microservices_db"
 }
 
+data "aws_iam_role" "lab_role" {
+  name = "LabRole"
+}
+
 module "discord_notifier" {
   count = var.discord_webhook_url != "" ? 1 : 0
 
@@ -63,4 +67,5 @@ module "discord_notifier" {
   project_name      = var.project_name
   discord_webhook_url = var.discord_webhook_url
   environment       = "prod"
+  lab_role_arn      = data.aws_iam_role.lab_role.arn
 }
