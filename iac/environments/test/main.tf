@@ -4,10 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket         = "obligatorio-devops-tf-state"
+    bucket         = "alejandrothom-stockwiz-tf-state"
     key            = "test/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "obligatorio-devops-tf-locks"
+    dynamodb_table = "alejandrothom-stockwiz-tf-locks"
     encrypt        = true
   }
 }
