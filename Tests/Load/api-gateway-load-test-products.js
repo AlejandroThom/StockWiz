@@ -13,9 +13,10 @@ export let options = {
     { duration: '10s', target: 0 },      // ramp-down
   ]
 };
-
+const TARGET_HOST = __ENV.TARGET_HOST;
 export default function () {
-  const res = http.get('http://localhost:8000/api/products');
+  let url = `${TARGET_HOST}/api/products`;
+  const res = http.get(url);
 
   check(res, {
     "status 200": (r) => r.status === 200,

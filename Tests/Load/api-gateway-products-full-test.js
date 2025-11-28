@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { sleep } from "k6";
-
+const TARGET_HOST = __ENV.TARGET_HOST;
 export let options = {
   scenarios: {
     products: {
@@ -31,23 +31,27 @@ export let options = {
 };
 
 export function getProducts() {
-  http.get("http://localhost:8000/api/products");
+  let url = `${TARGET_HOST}/api/products`;
+  http.get(url);
   sleep(1);
 }
 
 export function getProductById() {
   const id = Math.floor(Math.random() * 5) + 1;
-  http.get(`http://localhost:8000/api/products/${id}`);
+  let url = `${TARGET_HOST}/api/products`;
+  http.get(url+`/${id}`);
   sleep(1);
 }
 
 export function getProductsFull() {
-  http.get("http://localhost:8000/api/products-full");
+  let url = `${TARGET_HOST}/api/products-full`;
+  http.get(url);
   sleep(1);
 }
 
 export function getInventoryByProduct() {
   const id = Math.floor(Math.random() * 5) + 1;
-  http.get(`http://localhost:8000/api/inventory/product/${id}`);
+  let url = `${TARGET_HOST}/api/inventory/product`;
+  http.get(url+`/${id}`);
   sleep(1);
 }

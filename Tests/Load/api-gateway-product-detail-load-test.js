@@ -13,11 +13,14 @@ export let options = {
   ],
 };
 
+const TARGET_HOST = __ENV.TARGET_HOST;
+
 export default function () {
   const productId = Math.floor(Math.random() * 5) + 1;
 
+  let url = `${TARGET_HOST}/api/products/${productId}`;
   const res = http.get(
-    `http://localhost:8000/api/products/${productId}`
+    url
   );
 
   check(res, {

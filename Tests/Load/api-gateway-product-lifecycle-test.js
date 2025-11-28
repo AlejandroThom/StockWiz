@@ -5,11 +5,14 @@ export let options = {
   vus: 10,
   duration: "30s",
 };
-
+const TARGET_HOST = __ENV.TARGET_HOST;
 export default function () {
+
+  let url = `${TARGET_HOST}/api/products`;
+
   // Crear producto
   let createRes = http.post(
-    "http://localhost:8000/api/products",
+    url,
     JSON.stringify({
       name: "k6 Load Test Product",
       price: Math.floor(Math.random() * 1000) + 100,
@@ -33,7 +36,7 @@ export default function () {
 
   // Actualizar producto
   let updateRes = http.put(
-    `http://localhost:8000/api/products/${id}`,
+    url+`/${id}`,
     JSON.stringify({
       name: "Updated Test Product",
       price: Math.floor(Math.random() * 500) + 50,
@@ -48,7 +51,7 @@ export default function () {
   });
 
   // Borrar producto
-  let deleteRes = http.del(`http://localhost:8000/api/products/${id}`);
+  let deleteRes = http.del(url+`/${id}`);
 
   check(deleteRes, {
     "delete OK (204)": (r) => r.status === 204,

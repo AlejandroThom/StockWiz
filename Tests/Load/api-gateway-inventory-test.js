@@ -13,10 +13,14 @@ export let options = {
   ],
 };
 
+const TARGET_HOST = __ENV.TARGET_HOST;
+
 export default function () {
   const id = Math.floor(Math.random() * 5) + 1;
 
-  let res = http.get(`http://localhost:8000/api/inventory/${id}`);
+  let url = `${TARGET_HOST}/api/inventory/${id}`;
+
+  let res = http.get(url);
 
   check(res, {
     "status is 200": (r) => r.status === 200,

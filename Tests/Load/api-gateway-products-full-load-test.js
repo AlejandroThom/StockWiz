@@ -1,6 +1,6 @@
 import http from "k6/http";
 import { check, sleep } from "k6";
-
+const TARGET_HOST = __ENV.TARGET_HOST;
 export let options = {
   thresholds: {
     http_req_failed: ["rate<0.05"],
@@ -14,7 +14,8 @@ export let options = {
 };
 
 export default function () {
-  const res = http.get("http://localhost:8000/api/products-full");
+  let url = `${TARGET_HOST}/api/products-full`;
+  const res = http.get(url);
 
   check(res, {
     "status OK": (r) => r.status === 200,
