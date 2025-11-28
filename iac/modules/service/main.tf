@@ -8,15 +8,15 @@ resource "aws_lb_target_group" "service" {
   health_check {
     path                = var.health_check_path
     healthy_threshold   = 2
-    unhealthy_threshold = 3
-    timeout             = 5
-    interval            = 15
+    unhealthy_threshold = 5
+    timeout             = 10
+    interval            = 30
     matcher             = "200"
     protocol            = "HTTP"
   }
 
   # Connection draining para evitar cortar conexiones activas
-  deregistration_delay = 30
+  deregistration_delay = 60
 }
 
 resource "aws_lb_listener_rule" "service" {
