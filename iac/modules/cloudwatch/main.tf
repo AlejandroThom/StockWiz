@@ -11,14 +11,15 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway"],
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service"],
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service"]
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway", { "period" : 60 }],
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service", { "period" : 60 }],
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service", { "period" : 60 }]
           ]
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
           title   = "ECS Service CPU Utilization"
+          period  = 60
         }
       },
       {
@@ -29,14 +30,15 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway"],
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service"],
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service"]
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway", { "period" : 60 }],
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service", { "period" : 60 }],
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service", { "period" : 60 }]
           ]
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
           title   = "ECS Service Memory Utilization"
+          period  = 60
         }
       },
       {
@@ -47,12 +49,13 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix]
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", var.alb_arn_suffix, { "period" : 60 }]
           ]
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
           title   = "ALB Request Count"
+          period  = 60
         }
       },
       {
@@ -63,13 +66,14 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix],
-            ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix]
+            ["AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "period" : 60 }],
+            ["AWS/ApplicationELB", "HTTPCode_ELB_5XX_Count", "LoadBalancer", var.alb_arn_suffix, { "period" : 60 }]
           ]
           view    = "timeSeries"
           stacked = false
           region  = var.aws_region
           title   = "ALB 5xx Errors"
+          period  = 60
         }
       }
     ]
