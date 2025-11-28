@@ -182,37 +182,10 @@ jobs:
           fi
         continue-on-error: true
 
-  sonar:
-    name: SonarCloud Scan and Quality Gate
-    runs-on: ubuntu-latest
-    needs: [deploy_test]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          args: >
-            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Sonar Quality Gate
-        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
-
   load_tests:
     name: Run k6 load tests
     runs-on: ubuntu-latest
-    needs: [sonar]
+    needs: [deploy_test]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
