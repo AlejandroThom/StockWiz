@@ -11,9 +11,9 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway"],
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service"],
-            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service"]
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "api-gateway"],
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "product-service"],
+            ["AWS/ECS", "CPUUtilization", "ClusterName", var.cluster_name, "ServiceName", "inventory-service"]
           ],
           stat    = "Average"
           view    = "timeSeries"
@@ -31,9 +31,9 @@ resource "aws_cloudwatch_dashboard" "main" {
         height = 6
         properties = {
           metrics = [
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-api-gateway"],
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-product-service"],
-            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "${var.project_name}-inventory-service"]
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "api-gateway"],
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "product-service"],
+            ["AWS/ECS", "MemoryUtilization", "ClusterName", var.cluster_name, "ServiceName", "inventory-service"]
           ],
           stat    = "Average"
           view    = "timeSeries"
