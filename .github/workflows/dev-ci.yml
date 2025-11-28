@@ -245,11 +245,11 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
+          TARGET_HOST="http://${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
 
       - name: Run Product Load Test2
         run: |
-          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
+          TARGET_HOST="http://${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
 
   cleanup_after_test:
     name: Cleanup on Failure
