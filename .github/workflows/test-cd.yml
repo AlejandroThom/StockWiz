@@ -134,7 +134,6 @@ jobs:
         run: |
           ALB_DNS=$(terraform output -raw alb_dns_name)
           echo "alb_dns=$ALB_DNS" >> $GITHUB_OUTPUT
-        continue-on-error: true
 
       - name: Notify Discord on Success
         if: success() && steps.alb_dns.outcome == 'success'
@@ -230,8 +229,8 @@ jobs:
 
       - name: Run Product Load Test
         run: |
-          k6 run Tests/Load/api-gateway-load-test-products.js
+          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
 
       - name: Run Product Detail Load Test
         run: |
-          k6 run Tests/Load/api-gateway-product-detail-load-test.js
+          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
