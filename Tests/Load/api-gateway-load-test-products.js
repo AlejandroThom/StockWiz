@@ -14,7 +14,18 @@ export let options = {
   ]
 };
 const TARGET_HOST = __ENV.TARGET_HOST;
+
+if (!TARGET_HOST) {
+  throw new Error(`❌ ERROR: TARGET_HOST inválido: ${TARGET_HOST}`);
+}
+// Verificar formato de URL
+try {
+new URL(TARGET_HOST);
+} catch (err) {
+throw new Error(`❌ ERROR: TARGET_HOST no es una URL válida: ${TARGET_HOST}`);
+}
 export default function () {
+  
   let url = `${TARGET_HOST}/api/products`;
   const res = http.get(url);
 
