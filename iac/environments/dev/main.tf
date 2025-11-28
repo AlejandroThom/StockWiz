@@ -60,9 +60,18 @@ module "db_redis" {
 module "discord_notifier" {
   count = var.discord_webhook_url != "" ? 1 : 0
 
-  source            = "../../modules/discord_notifier"
-  project_name      = var.project_name
+  source              = "../../modules/discord_notifier"
+  project_name        = var.project_name
   discord_webhook_url = var.discord_webhook_url
-  environment       = "dev"
-  lab_role_arn      = data.aws_iam_role.lab_role.arn
+  environment         = "dev"
+  lab_role_arn        = data.aws_iam_role.lab_role.arn
+}
+
+module "cloudwatch" {
+  source         = "../../modules/cloudwatch"
+  project_name   = var.project_name
+  environment    = "dev"
+  aws_region     = var.aws_region
+  cluster_name   = module.compute.cluster_name
+  alb_arn_suffix = module.alb.alb_arn_suffix
 }
