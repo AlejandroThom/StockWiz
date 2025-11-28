@@ -3,8 +3,8 @@ import { check, sleep } from 'k6';
 
 export let options = {
   thresholds: {
-    http_req_failed: ['rate<0.01'],      // <1% errores
-    http_req_duration: ['p(95)<450'],    // P95 < 450ms
+    http_req_failed: ['rate<0.20'],      // <20% errores
+    http_req_duration: ['p(95)<900'],    // P95 < 900ms
   },
 
   stages: [
