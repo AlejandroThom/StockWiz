@@ -5,25 +5,25 @@ export let options = {
   scenarios: {
     products: {
       executor: "constant-vus",
-      vus: 2,
+      vus: 1,
       duration: "10s",
       exec: "getProducts",
     },
     productById: {
       executor: "constant-vus",
-      vus: 2,
+      vus: 1,
       duration: "10s",
       exec: "getProductById",
     },
     productsFull: {
       executor: "constant-vus",
-      vus: 2,
+      vus: 1,
       duration: "10s",
       exec: "getProductsFull",
     },
     inventoryByProduct: {
       executor: "constant-vus",
-      vus: 2,
+      vus: 1,
       duration: "10s",
       exec: "getInventoryByProduct",
     }
