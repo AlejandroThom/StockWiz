@@ -15,6 +15,8 @@ export default function () {
     url,
     JSON.stringify({
       name: "k6 Load Test Product",
+      description: "Omelo",
+      Category:"chino",
       price: Math.floor(Math.random() * 1000) + 100,
     }),
     {
@@ -39,6 +41,7 @@ export default function () {
     url+`/${id}`,
     JSON.stringify({
       name: "Updated Test Product",
+      description : "Omelo chino,soy Homero pero chino",
       price: Math.floor(Math.random() * 500) + 50,
     }),
     {
