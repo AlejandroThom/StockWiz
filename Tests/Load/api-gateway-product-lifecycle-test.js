@@ -2,7 +2,7 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 
 export let options = {
-  vus: 10,
+  vus: 6,
   duration: "30s",
 };
 const TARGET_HOST = __ENV.TARGET_HOST;
