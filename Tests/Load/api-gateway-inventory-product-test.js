@@ -13,7 +13,7 @@ export let options = {
 const TARGET_HOST = __ENV.TARGET_HOST;
 
 export default function () {
-  const productId = Math.floor(Math.random() * 5) + 1;
+  const productId = 3;
   
   let url = `${TARGET_HOST}/api/inventory/product/${productId}`;
   let res = http.get(url);

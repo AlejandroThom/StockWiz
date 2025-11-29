@@ -16,7 +16,7 @@ export let options = {
 const TARGET_HOST = __ENV.TARGET_HOST;
 
 export default function () {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
 
   let url = `${TARGET_HOST}/api/inventory/${id}`;
 

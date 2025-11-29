@@ -17,7 +17,7 @@ export default function () {
       name: "k6 Load Test Product",
       description: "Omelo",
       Category:"chino",
-      price: Math.floor(Math.random() * 1000) + 100,
+      price: 600,
     }),
     {
       headers: { "Content-Type": "application/json" },
@@ -42,7 +42,7 @@ export default function () {
     JSON.stringify({
       name: "Updated Test Product",
       description : "Omelo chino,soy Homero pero chino",
-      price: Math.floor(Math.random() * 500) + 50,
+      price: 800,
     }),
     {
       headers: { "Content-Type": "application/json" },

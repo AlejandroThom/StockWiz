@@ -37,7 +37,7 @@ export function getProducts() {
 }
 
 export function getProductById() {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
   let url = `${TARGET_HOST}/api/products`;
   http.get(url+`/${id}`);
   sleep(1);
@@ -50,7 +50,7 @@ export function getProductsFull() {
 }
 
 export function getInventoryByProduct() {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
   let url = `${TARGET_HOST}/api/inventory/product`;
   http.get(url+`/${id}`);
   sleep(1);
