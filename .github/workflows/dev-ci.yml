@@ -247,6 +247,14 @@ jobs:
             | xargs curl -L -o k6.deb
           sudo dpkg -i k6.deb
 
+      - name: Run Inventory product test
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-product-test.js    
+      
+      - name: Run Inventory test
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
+
       - name: Run Product Load Test
         run: |
           TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
@@ -254,6 +262,18 @@ jobs:
       - name: Run Product Load Test2
         run: |
           TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
+
+      - name: Run Product lifecycle
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-lyfecycle-test.js
+
+      - name: Run Product full load
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-load-test.js
+
+      - name: Run Product full load test 2
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-test.js
 
   cleanup_after_test:
     name: Cleanup on Failure
