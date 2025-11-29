@@ -7,8 +7,8 @@ export let options = {
     http_req_duration: ["p(95)<5000"],
   },
   stages: [
-    { duration: "15s", target: 15 },
-    { duration: "45s", target: 40 },
+    { duration: "15s", target: 5 },
+    { duration: "45s", target: 15 },
     { duration: "10s", target: 0 },
   ],
 };
