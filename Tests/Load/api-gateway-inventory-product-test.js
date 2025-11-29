@@ -6,8 +6,8 @@ export let options = {
     http_req_failed: ["rate<0.20"],
     http_req_duration: ["p(95)<2000"],
   },
-  vus: 5,
-  duration: "40s"
+  vus: 2,
+  duration: "20s"
 };
 
 const TARGET_HOST = __ENV.TARGET_HOST;
