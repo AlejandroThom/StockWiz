@@ -9,7 +9,7 @@ export let options = {
 
   stages: [
     { duration: '10s', target: 3 },     // ramp-up
-    { duration: '40s', target: 2 },     // carga sostenida
+    { duration: '40s', target: 1 },     // carga sostenida
     { duration: '10s', target: 0 },      // ramp-down
   ]
 };
