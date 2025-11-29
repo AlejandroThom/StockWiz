@@ -3,7 +3,7 @@ import { check, sleep } from "k6";
 
 export let options = {
   vus: 1,
-  duration: "10s",
+  duration: "5s",
 };
 const TARGET_HOST = __ENV.TARGET_HOST;
 export default function () {

@@ -7,7 +7,7 @@ export let options = {
     http_req_duration: ["p(95)<3000"],
   },
   vus: 1,
-  duration: "10s"
+  duration: "5s"
 };
 
 const TARGET_HOST = __ENV.TARGET_HOST;

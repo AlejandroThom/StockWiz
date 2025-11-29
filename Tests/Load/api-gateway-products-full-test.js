@@ -6,25 +6,25 @@ export let options = {
     products: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProducts",
     },
     productById: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProductById",
     },
     productsFull: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProductsFull",
     },
     inventoryByProduct: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getInventoryByProduct",
     }
   },

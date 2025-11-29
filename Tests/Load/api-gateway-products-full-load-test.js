@@ -8,8 +8,8 @@ export let options = {
   },
   stages: [
     { duration: "5s", target: 2 },
-    { duration: "10s", target: 1 },
-    { duration: "10s", target: 0 },
+    { duration: "8s", target: 1 },
+    { duration: "8s", target: 0 },
   ],
 };
 
