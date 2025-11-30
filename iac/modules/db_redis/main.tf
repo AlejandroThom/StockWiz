@@ -58,6 +58,8 @@ resource "aws_instance" "db_redis" {
   ami                         = data.aws_ssm_parameter.amzn2.value
   instance_type               = var.instance_type
   subnet_id                   = var.subnet_id
+  # justification: required for development environment only.
+  # public access is restricted by security groups
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.db.id]
   # key_name is optional - if not provided, use EC2 Instance Connect
