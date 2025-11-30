@@ -224,8 +224,8 @@ jobs:
             cat /tmp/lambda-response.json
           fi
         continue-on-error: true
-      - name: Wait 120 seconds for services to stabilize
-        run: sleep 120
+      - name: Wait 400 seconds for services to stabilize
+        run: sleep 400
     outputs:
       alb_dns: ${{ steps.alb_dns.outputs.alb_dns }}
 
