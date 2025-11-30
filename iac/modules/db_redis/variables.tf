@@ -13,16 +13,6 @@ variable "volume_size" {
   default = 20
 }
 
-variable "volume_iops" {
-  type    = number
-  default = 6000
-}
-
-variable "volume_throughput" {
-  type    = number
-  default = 250
-}
-
 variable "postgres_user" {
   type    = string
   default = "admin"

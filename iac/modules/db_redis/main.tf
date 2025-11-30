@@ -35,7 +35,7 @@ resource "aws_security_group" "db" {
   #  protocol    = "tcp"
   #  cidr_blocks = ["186.55.30.175"]
   #}
-#
+  #
   #egress {
   #  from_port   = 0
   #  to_port     = 0
@@ -48,8 +48,6 @@ resource "aws_ebs_volume" "data" {
   availability_zone = data.aws_subnet.this.availability_zone
   size              = var.volume_size
   type              = "gp3"
-  iops              = var.volume_iops
-  throughput        = var.volume_throughput
 
   tags = {
     Name = "${var.project_name}-db-redis-data"
@@ -57,15 +55,15 @@ resource "aws_ebs_volume" "data" {
 }
 
 resource "aws_instance" "db_redis" {
-  ami                         = data.aws_ssm_parameter.amzn2.value
-  instance_type               = var.instance_type
-  subnet_id                   = var.subnet_id
+  ami           = data.aws_ssm_parameter.amzn2.value
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id
   # justification: required for development environment only.
   # public access is restricted by security groups
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.db.id]
   # key_name is optional - if not provided, use EC2 Instance Connect
-  key_name                    = var.key_name != null ? var.key_name : null
+  key_name = var.key_name != null ? var.key_name : null
 
   user_data = <<-EOF
               #!/bin/bash

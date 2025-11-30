@@ -39,9 +39,9 @@ module "compute" {
   ecs_sg_id             = module.security.ecs_instances_sg_id
   instance_profile_name = var.lab_instance_profile_name
   instance_type         = "t3.large"
-  asg_min_size          = 2
+  asg_min_size          = 1
   asg_max_size          = 4
-  asg_desired_capacity  = 2
+  asg_desired_capacity  = 1
 }
 
 module "db_redis" {
@@ -51,7 +51,7 @@ module "db_redis" {
   subnet_id         = module.networking.public_subnet_ids[0]
   ecs_sg_id         = module.security.ecs_instances_sg_id
   instance_type     = "t3.large"
-  volume_size       = 50
+  volume_size       = 20
   postgres_user     = "admin"
   postgres_password = "admin123"
   postgres_db       = "microservices_db"
@@ -60,9 +60,9 @@ module "db_redis" {
 module "discord_notifier" {
   count = var.discord_webhook_url != "" ? 1 : 0
 
-  source            = "../../modules/discord_notifier"
-  project_name      = var.project_name
+  source              = "../../modules/discord_notifier"
+  project_name        = var.project_name
   discord_webhook_url = var.discord_webhook_url
-  environment       = "prod"
-  lab_role_arn      = data.aws_iam_role.lab_role.arn
+  environment         = "prod"
+  lab_role_arn        = data.aws_iam_role.lab_role.arn
 }
