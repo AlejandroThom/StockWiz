@@ -2,7 +2,7 @@
 *.pdf
 
 # Text files
-*.txt
+
 
 # Terraform
 .terraform/

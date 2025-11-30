@@ -1,0 +1,5 @@
+# Test dependencies for Discord notifier Lambda function
+# unittest is part of Python standard library, no external dependencies needed
+# Coverage tool for code coverage reporting
+coverage==7.3.4
+
