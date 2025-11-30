@@ -33,6 +33,14 @@ module "api_gateway" {
   ]
 }
 
+data "aws_secretsmanager_secret" "db_password" {
+  name = "stockwiz-db-password"
+}
+
+data "aws_secretsmanager_secret_version" "db_password_version" {
+  secret_id = data.aws_secretsmanager_secret.db_password.id
+}
+
 module "product_service" {
   source                 = "../../modules/service"
   project_name           = var.project_name
@@ -56,7 +64,7 @@ module "product_service" {
   autoscaling_max_capacity = 4
   health_check_grace_period_seconds = 60
   environment_variables = [
-    { name = "DATABASE_URL", value = "postgresql://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db" },
+    { name = "DATABASE_URL", value = "postgresql://admin:${jsondecode(data.aws_secretsmanager_secret_version.db_password_version.secret_string).password_db_postgre}@${module.db_redis.private_ip}:5432/microservices_db" },
     { name = "REDIS_URL", value = "redis://${module.db_redis.private_ip}:6379" }
   ]
 }
@@ -84,7 +92,7 @@ module "inventory_service" {
   autoscaling_max_capacity = 4
   health_check_grace_period_seconds = 60
   environment_variables = [
-    { name = "DATABASE_URL", value = "postgres://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db?sslmode=disable" },
+    { name = "DATABASE_URL", value = "postgres://admin:${jsondecode(data.aws_secretsmanager_secret_version.db_password_version.secret_string).password_db_postgre}@${module.db_redis.private_ip}:5432/microservices_db?sslmode=disable" },
     { name = "REDIS_URL", value = "${module.db_redis.private_ip}:6379" }
   ]
 }
