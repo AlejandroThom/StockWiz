@@ -48,6 +48,8 @@ resource "aws_ebs_volume" "data" {
   availability_zone = data.aws_subnet.this.availability_zone
   size              = var.volume_size
   type              = "gp3"
+  iops              = var.volume_iops
+  throughput        = var.volume_throughput
 
   tags = {
     Name = "${var.project_name}-db-redis-data"

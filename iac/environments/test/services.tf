@@ -20,6 +20,12 @@ module "api_gateway" {
   memory                 = 1024
   path_pattern           = "/*"
   listener_rule_priority = 100
+  create_listener_rule   = true
+  desired_count          = 2
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 2
+  autoscaling_max_capacity = 4
+  health_check_grace_period_seconds = 60
   environment_variables = [
     { name = "PRODUCT_SERVICE_URL", value = "http://${module.alb.alb_dns_name}/api" },
     { name = "INVENTORY_SERVICE_URL", value = "http://${module.alb.alb_dns_name}/api" },
@@ -43,6 +49,12 @@ module "product_service" {
   memory                 = 1024
   path_pattern           = "/api/products*"
   listener_rule_priority = 10
+  create_listener_rule   = true
+  desired_count          = 2
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 2
+  autoscaling_max_capacity = 4
+  health_check_grace_period_seconds = 60
   environment_variables = [
     { name = "DATABASE_URL", value = "postgresql://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db" },
     { name = "REDIS_URL", value = "redis://${module.db_redis.private_ip}:6379" }
@@ -65,6 +77,12 @@ module "inventory_service" {
   memory                 = 1024
   path_pattern           = "/api/inventory*"
   listener_rule_priority = 20
+  create_listener_rule   = true
+  desired_count          = 2
+  enable_autoscaling     = true
+  autoscaling_min_capacity = 2
+  autoscaling_max_capacity = 4
+  health_check_grace_period_seconds = 60
   environment_variables = [
     { name = "DATABASE_URL", value = "postgres://admin:admin123@${module.db_redis.private_ip}:5432/microservices_db?sslmode=disable" },
     { name = "REDIS_URL", value = "${module.db_redis.private_ip}:6379" }

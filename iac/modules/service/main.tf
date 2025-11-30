@@ -83,7 +83,7 @@ resource "aws_ecs_service" "service" {
   desired_count                      = var.desired_count
   launch_type                        = "EC2"
   force_new_deployment               = true
-  deployment_minimum_healthy_percent = 100
+  deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
 
   deployment_controller {
