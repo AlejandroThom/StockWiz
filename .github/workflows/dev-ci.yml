@@ -133,10 +133,10 @@ jobs:
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py
-            -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py
+            -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py,**/Tests/Load/test_*.js
+            -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py,**/Tests/Load/test_*.js
             -Dsonar.test.inclusions=**/*.test.js,**/test_*.js,**/test_*.py,**/*_test.py
-            -Dsonar.test.exclusions=**/*.tf,**/*.tfvars,**/*.md,**/*.txt,**/*.json,**/*.yaml,**/*.yml
+            -Dsonar.test.exclusions=**/*.tf,**/*.tfvars,**/*.md,**/*.txt,**/*.json,**/*.yaml,**/*.yml,**/Tests/Load/test_*.js
             -Dsonar.python.coverage.reportPaths=iac/modules/discord_notifier/coverage.xml
             -Dsonar.python.version=3.11
         env:
