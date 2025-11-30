@@ -89,6 +89,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies for coverage
+        working-directory: iac/modules/discord_notifier
+        run: |
+          pip install -r requirements-test.txt
+
+      - name: Run Python tests with coverage
+        working-directory: iac/modules/discord_notifier
+        run: |
+          coverage run -m unittest test_lambda_function.py
+          coverage xml -o coverage.xml
+          coverage report
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
         with:
@@ -96,8 +113,10 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js
-            -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js
+            -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py
             -Dsonar.test.exclusions=**/test_*.js,**/*.test.js
+            -Dsonar.python.coverage.reportPaths=iac/modules/discord_notifier/coverage.xml
+            -Dsonar.test.inclusions=**/test_*.js,**/*.test.js,**/test_*.py,**/*_test.py
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
