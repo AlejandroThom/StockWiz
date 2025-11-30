@@ -252,10 +252,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
  
-      - name: Init Terraform dev
-        working-directory: iac/environments/dev
+      - name: Init Terraform test
+        working-directory: iac/environments/test
         run: terraform init
  
-      - name: Destroy deploy dev infrastructure
-        working-directory: iac/environments/dev
+      - name: Destroy deploy test infrastructure
+        working-directory: iac/environments/test
         run: terraform destroy -auto-approve
