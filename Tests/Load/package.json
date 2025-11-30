@@ -1,0 +1,38 @@
+{
+  "name": "k6-load-tests",
+  "version": "1.0.0",
+  "description": "Test coverage for k6 load tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "k6",
+    "load-testing",
+    "testing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/test_*.js"
+    ],
+    "collectCoverageFrom": [
+      "*.js",
+      "!test_*.js",
+      "!node_modules/**"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ]
+  }
+}
+
