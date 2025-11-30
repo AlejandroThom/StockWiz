@@ -95,6 +95,9 @@ jobs:
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js
+            -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js
+            -Dsonar.test.exclusions=**/test_*.js,**/*.test.js
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
