@@ -133,12 +133,11 @@ jobs:
           args: >
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js
+            -Dsonar.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py
             -Dsonar.coverage.exclusions=**/test_*.js,**/node_modules/**,**/coverage/**,**/*.test.js,**/test_*.py,**/*_test.py
-            -Dsonar.test.exclusions=**/test_*.js,**/*.test.js
+            -Dsonar.test.inclusions=**/*.test.js,**/test_*.js,**/test_*.py,**/*_test.py
+            -Dsonar.test.exclusions=**/*.tf,**/*.tfvars,**/*.md,**/*.txt,**/*.json,**/*.yaml,**/*.yml
             -Dsonar.python.coverage.reportPaths=iac/modules/discord_notifier/coverage.xml
-            -Dsonar.test.inclusions=**/test_*.js,**/*.test.js,**/test_*.py,**/*_test.py
-            -Dsonar.sources=.,iac/modules/discord_notifier
             -Dsonar.python.version=3.11
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
