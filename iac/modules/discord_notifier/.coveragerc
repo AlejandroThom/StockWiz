@@ -6,9 +6,6 @@ omit =
     */venv/*
     */env/*
 
-[xml]
-output = coverage.xml
-
 [report]
 exclude_lines =
     pragma: no cover
