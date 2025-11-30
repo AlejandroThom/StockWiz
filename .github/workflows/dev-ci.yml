@@ -188,31 +188,31 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: https://sonarcloud.io
-  bootstrap:
-    name: Bootstrap infrastructure
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: us-east-1
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Init (bootstrap)
-        working-directory:  iac/bootstrap
-        run: terraform init
-
-      - name: Terraform Apply (bootstrap)
-        working-directory:  iac/bootstrap
-        run: terraform apply -auto-approve
+#  bootstrap:
+#    name: Bootstrap infrastructure
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v4
+#
+#      - name: Configure AWS Credentials
+#        uses: aws-actions/configure-aws-credentials@v4
+#        with:
+#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+#          aws-region: us-east-1
+#
+#      - name: Setup Terraform
+#        uses: hashicorp/setup-terraform@v3
+#
+#      - name: Terraform Init (bootstrap)
+#        working-directory:  iac/bootstrap
+#        run: terraform init
+#
+#      - name: Terraform Apply (bootstrap)
+#        working-directory:  iac/bootstrap
+#        run: terraform apply -auto-approve
 
   deploy_dev:
     name: Deploy to Dev
@@ -311,33 +311,33 @@ jobs:
 #        run: sleep 400
 #    outputs:
 #      alb_dns: ${{ steps.alb_dns.outputs.alb_dns }}
-# cleanup_after_test:
-#   name: Cleanup on Failure
-#   runs-on: ubuntu-latest
-#   needs: load_tests
-#   if: ${{ failure() }}   # Se ejecuta solo si alguno de los jobs anteriores falla
-#   steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v4
-#
-#     - name: Configure AWS Credentials
-#       uses: aws-actions/configure-aws-credentials@v4
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-#         aws-region: us-east-1
-#
-#     - name: Setup Terraform
-#       uses: hashicorp/setup-terraform@v3
-#
-#     - name: Init Terraform dev
-#       working-directory: iac/environments/dev
-#       run: terraform init
-#
-#     - name: Destroy deploy dev infrastructure
-#       working-directory: iac/environments/dev
-#       run: terraform destroy -auto-approve
+  cleanup_after_test:
+    name: Cleanup on Failure
+    runs-on: ubuntu-latest
+    needs: load_tests
+    if: ${{ failure() }}   # Se ejecuta solo si alguno de los jobs anteriores falla
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+ 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+ 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+ 
+      - name: Init Terraform dev
+        working-directory: iac/environments/dev
+        run: terraform init
+ 
+      - name: Destroy deploy dev infrastructure
+        working-directory: iac/environments/dev
+        run: terraform destroy -auto-approve
 
 
     
