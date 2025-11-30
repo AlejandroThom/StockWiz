@@ -314,6 +314,7 @@ jobs:
   cleanup_after_test:
     name: Cleanup on Failure
     runs-on: ubuntu-latest
+    needs: deploy_dev
     if: ${{ failure() }}   # Se ejecuta solo si alguno de los jobs anteriores falla
     steps:
       - name: Checkout repository
