@@ -4,17 +4,17 @@
 # Install coverage if not already installed
 pip install -q coverage
 
-# Run tests with coverage
-coverage run -m unittest test_lambda_function.py
+# Run tests with coverage (source=. to include current directory)
+coverage run --source=. -m unittest test_lambda_function.py
 
-# Generate XML report for SonarQube
-coverage xml -o coverage.xml
+# Generate XML report for SonarQube (uses .coveragerc config)
+coverage xml
 
 # Generate HTML report (optional, for local viewing)
 coverage html -d htmlcov
 
-# Display coverage report
-coverage report
+# Display coverage report with missing lines
+coverage report -m
 
 echo ""
 echo "Coverage report generated:"

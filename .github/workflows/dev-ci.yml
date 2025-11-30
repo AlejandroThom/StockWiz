@@ -102,9 +102,30 @@ jobs:
       - name: Run Python tests with coverage
         working-directory: iac/modules/discord_notifier
         run: |
-          coverage run -m unittest test_lambda_function.py
-          coverage xml -o coverage.xml
-          coverage report
+          coverage run --source=. -m unittest test_lambda_function.py
+          coverage xml
+          coverage report -m
+          echo ""
+          echo "=== Coverage XML file info ==="
+          if [ -f coverage.xml ]; then
+            echo "✓ coverage.xml exists"
+            echo "File size: $(wc -l < coverage.xml) lines"
+            echo "First 20 lines:"
+            head -20 coverage.xml
+          else
+            echo "✗ coverage.xml NOT found"
+            exit 1
+          fi
+
+      - name: Verify coverage file exists
+        run: |
+          if [ -f iac/modules/discord_notifier/coverage.xml ]; then
+            echo "✓ coverage.xml found"
+            echo "File size: $(wc -l < iac/modules/discord_notifier/coverage.xml) lines"
+          else
+            echo "✗ coverage.xml NOT found"
+            exit 1
+          fi
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2
@@ -117,6 +138,8 @@ jobs:
             -Dsonar.test.exclusions=**/test_*.js,**/*.test.js
             -Dsonar.python.coverage.reportPaths=iac/modules/discord_notifier/coverage.xml
             -Dsonar.test.inclusions=**/test_*.js,**/*.test.js,**/test_*.py,**/*_test.py
+            -Dsonar.sources=.,iac/modules/discord_notifier
+            -Dsonar.python.version=3.11
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

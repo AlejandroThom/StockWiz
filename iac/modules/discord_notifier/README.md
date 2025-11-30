@@ -41,8 +41,23 @@ El proyecto está configurado para generar reportes de coverage que SonarQube pu
 
 - **Formato XML**: `coverage.xml` (usado por SonarQube)
 - **Formato HTML**: `htmlcov/index.html` (para visualización local)
+- **Configuración**: `.coveragerc` (configuración de coverage)
 
 El workflow de CI/CD ejecuta automáticamente los tests con coverage y genera el reporte XML.
+
+### Configuración de SonarQube
+
+SonarQube está configurado para:
+- Leer el reporte de coverage desde: `iac/modules/discord_notifier/coverage.xml`
+- Incluir `lambda_function.py` en el análisis de coverage
+- Excluir `test_lambda_function.py` del cálculo de coverage (los tests no necesitan coverage)
+
+### Troubleshooting
+
+Si SonarQube no muestra el coverage:
+1. Verifica que `coverage.xml` se genera correctamente en CI/CD
+2. Verifica que la ruta en `sonar.python.coverage.reportPaths` sea correcta
+3. Asegúrate de que `--source=.` se use al ejecutar coverage
 
 ## Tests
 
