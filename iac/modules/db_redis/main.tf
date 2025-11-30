@@ -28,20 +28,20 @@ resource "aws_security_group" "db" {
   }
 
   # Allow SSH for debugging (Dev only - restrict in prod)
-  ingress {
-    description = "SSH from anywhere (Dev only)"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["186.55.30.175"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["186.55.30.175"]
-  }
+  #ingress {
+  #  description = "SSH from anywhere (Dev only)"
+  #  from_port   = 22
+  #  to_port     = 22
+  #  protocol    = "tcp"
+  #  cidr_blocks = ["186.55.30.175"]
+  #}
+#
+  #egress {
+  #  from_port   = 0
+  #  to_port     = 0
+  #  protocol    = "-1"
+  #  cidr_blocks = ["186.55.30.175"]
+  #}
 }
 
 resource "aws_ebs_volume" "data" {
