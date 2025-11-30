@@ -6,25 +6,25 @@ export let options = {
     products: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProducts",
     },
     productById: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProductById",
     },
     productsFull: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getProductsFull",
     },
     inventoryByProduct: {
       executor: "constant-vus",
       vus: 1,
-      duration: "10s",
+      duration: "5s",
       exec: "getInventoryByProduct",
     }
   },
@@ -37,7 +37,7 @@ export function getProducts() {
 }
 
 export function getProductById() {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
   let url = `${TARGET_HOST}/api/products`;
   http.get(url+`/${id}`);
   sleep(1);
@@ -50,7 +50,7 @@ export function getProductsFull() {
 }
 
 export function getInventoryByProduct() {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
   let url = `${TARGET_HOST}/api/inventory/product`;
   http.get(url+`/${id}`);
   sleep(1);

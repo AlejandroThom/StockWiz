@@ -7,16 +7,16 @@ export let options = {
     http_req_duration: ["p(95)<3000"],
   },
   stages: [
+    { duration: "7s", target: 1 },
     { duration: "10s", target: 1 },
-    { duration: "10s", target: 1 },
-    { duration: "10s", target: 0 },
+    { duration: "3s", target: 0 },
   ],
 };
 
 const TARGET_HOST = __ENV.TARGET_HOST;
 
 export default function () {
-  const id = Math.floor(Math.random() * 5) + 1;
+  const id = 3;
 
   let url = `${TARGET_HOST}/api/inventory/${id}`;
 

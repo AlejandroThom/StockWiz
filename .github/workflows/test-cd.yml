@@ -1,10 +1,10 @@
 name: Test CD
 
 on:
-  #workflow_run:
-  #  workflows: ["Dev CI/CD - SonarCloud Quality Gate"]
-  #  types: [completed]
-  #  branches: ["main"]
+  workflow_run:
+    workflows: ["Dev CI/CD - SonarCloud Quality Gate"]
+    types: [completed]
+    branches: ["main"]
   workflow_dispatch:
     inputs:
       commit_sha:
@@ -181,11 +181,15 @@ jobs:
             cat /tmp/lambda-response.json
           fi
         continue-on-error: true
+      - name: Wait 400 seconds for services to stabilize
+        run: sleep 400
+    outputs:
+      alb_dns: ${{ steps.alb_dns.outputs.alb_dns }}
 
   load_tests:
     name: Run k6 load tests
     runs-on: ubuntu-latest
-    needs: [deploy_test]
+    needs: deploy_test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -200,10 +204,30 @@ jobs:
             | xargs curl -L -o k6.deb
           sudo dpkg -i k6.deb
 
+      - name: Run Inventory product test
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-product-test.js    
+      
+      - name: Run Inventory test
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
+
       - name: Run Product Load Test
         run: |
-          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
 
-      - name: Run Product Detail Load Test
+      - name: Run Product Load Test2
         run: |
-          TARGET_HOST="${{ steps.alb_dns.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
+
+      - name: Run Product lifecycle
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-lyfecycle-test.js
+
+      - name: Run Product full load
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-load-test.js
+
+      - name: Run Product full load test 2
+        run: |
+          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-test.js

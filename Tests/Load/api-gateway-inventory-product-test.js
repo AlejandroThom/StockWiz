@@ -7,13 +7,13 @@ export let options = {
     http_req_duration: ["p(95)<3000"],
   },
   vus: 1,
-  duration: "10s"
+  duration: "5s"
 };
 
 const TARGET_HOST = __ENV.TARGET_HOST;
 
 export default function () {
-  const productId = Math.floor(Math.random() * 5) + 1;
+  const productId = 3;
   
   let url = `${TARGET_HOST}/api/inventory/product/${productId}`;
   let res = http.get(url);

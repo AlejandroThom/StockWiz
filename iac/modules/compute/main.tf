@@ -62,6 +62,8 @@ resource "aws_launch_template" "main" {
   }
 
   network_interfaces {
+    # justification: required for development environment only.
+  # public access is restricted by security groups
     associate_public_ip_address = true
     security_groups             = [var.ecs_sg_id]
   }
