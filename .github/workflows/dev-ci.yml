@@ -102,26 +102,65 @@ jobs:
       - name: Run Python tests with coverage
         working-directory: iac/modules/discord_notifier
         run: |
-          coverage run --source=. -m unittest test_lambda_function.py
-          coverage xml
+          # Run tests with coverage, using absolute path for source
+          coverage run --source=$PWD -m unittest test_lambda_function.py
+          # Generate XML report with paths relative to project root
+          coverage xml -o coverage.xml
           coverage report -m
           echo ""
           echo "=== Coverage XML file info ==="
           if [ -f coverage.xml ]; then
             echo "✓ coverage.xml exists"
             echo "File size: $(wc -l < coverage.xml) lines"
-            echo "First 20 lines:"
-            head -20 coverage.xml
+            echo "First 30 lines (showing file paths):"
+            head -30 coverage.xml | grep -E "(filename|class)" || head -30 coverage.xml
           else
             echo "✗ coverage.xml NOT found"
             exit 1
           fi
 
-      - name: Verify coverage file exists
+      - name: Fix coverage XML paths for SonarQube
+        run: |
+          cd iac/modules/discord_notifier
+          # SonarQube needs paths relative to project root
+          if [ -f coverage.xml ]; then
+            # Python script to fix paths in coverage.xml
+            python3 << 'EOF'
+          import xml.etree.ElementTree as ET
+          import os
+          
+          # Parse the XML
+          tree = ET.parse('coverage.xml')
+          root = tree.getroot()
+          
+          # Update all filename attributes to be relative to project root
+          for cls in root.findall('.//class'):
+              filename = cls.get('filename')
+              if filename and not filename.startswith('iac/'):
+                  # Make path relative to project root
+                  new_filename = f"iac/modules/discord_notifier/{filename}"
+                  cls.set('filename', new_filename)
+          
+          for line in root.findall('.//line'):
+              # Lines don't have filename, but we ensure classes do
+              pass
+          
+          # Save the updated XML
+          tree.write('coverage.xml', encoding='utf-8', xml_declaration=True)
+          print("✓ Updated coverage.xml paths to be relative to project root")
+          EOF
+            echo "Sample of updated paths:"
+            grep -E 'filename=' coverage.xml | head -3
+          fi
+
+      - name: Verify coverage file exists and show content
         run: |
           if [ -f iac/modules/discord_notifier/coverage.xml ]; then
-            echo "✓ coverage.xml found"
+            echo "✓ coverage.xml found at iac/modules/discord_notifier/coverage.xml"
             echo "File size: $(wc -l < iac/modules/discord_notifier/coverage.xml) lines"
+            echo ""
+            echo "=== Checking file paths in coverage.xml ==="
+            grep -E "filename=" iac/modules/discord_notifier/coverage.xml | head -3
           else
             echo "✗ coverage.xml NOT found"
             exit 1
