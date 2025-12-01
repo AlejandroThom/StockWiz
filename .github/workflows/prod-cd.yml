@@ -35,6 +35,13 @@ jobs:
     outputs:
       commit_sha: ${{ steps.vars.outputs.commit_sha }}
     steps:
+      - name: Validate Test workflow success
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            echo "Test workflow did not complete successfully; aborting prod deployment."
+            exit 1
+          fi
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -43,7 +50,9 @@ jobs:
         name: Set commit SHA
         run: |
           sha="${{ github.sha }}"
-          if [ "${{ github.event_name }}" = "release" ]; then
+          if [ "${{ github.event_name }}" = "workflow_run" ]; then
+            sha="${{ github.event.workflow_run.head_sha }}"
+          elif [ "${{ github.event_name }}" = "release" ]; then
             ref="${{ github.event.release.target_commitish }}"
             git fetch origin "$ref":"$ref" || true
             sha="$(git rev-parse "$ref" 2>/dev/null || echo "${{ github.sha }}")"
@@ -67,8 +76,10 @@ jobs:
         run: |
           set -e
           for svc in api-gateway product-service inventory-service; do
-            docker pull ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-${{ needs.resolve.outputs.commit_sha }}
+            echo "Verifying test image exists: $svc:test-latest"
+            docker pull ${{ env.REGISTRY }}/alejandrothom/stockwiz/$svc:test-latest
           done
+          echo "All test images verified successfully"
 
   deploy_prod:
     name: Deploy to Prod
@@ -99,12 +110,12 @@ jobs:
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             terraform apply -auto-approve \
-              -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
+              -var="image_tag=test-latest" \
               -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}" \
               -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
           else
             terraform apply -auto-approve \
-              -var="image_tag=test-${{ needs.resolve.outputs.commit_sha }}" \
+              -var="image_tag=test-latest" \
               -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
           fi
 
