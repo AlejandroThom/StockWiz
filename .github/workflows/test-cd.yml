@@ -120,12 +120,12 @@ jobs:
         run: |
           if [ -n "${{ secrets.DISCORD_WEBHOOK_URL }}" ]; then
             terraform apply -auto-approve \
-              -var="image_tag=test-${{ needs.prepare.outputs.commit_sha }}" \
+              -var="image_tag=test-latest" \
               -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}" \
               -var="discord_webhook_url=${{ secrets.DISCORD_WEBHOOK_URL }}"
           else
             terraform apply -auto-approve \
-              -var="image_tag=test-${{ needs.prepare.outputs.commit_sha }}" \
+              -var="image_tag=test-latest" \
               -var="lab_role_arn=${{ secrets.LAB_ROLE_ARN }}"
           fi
 
