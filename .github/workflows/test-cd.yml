@@ -211,27 +211,27 @@ jobs:
       
       - name: Run Inventory test
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
 
       - name: Run Product Load Test
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
 
       - name: Run Product Load Test2
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-detail-load-test.js
 
       - name: Run Product lifecycle
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-lyfecycle-test.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-product-lyfecycle-test.js
 
       - name: Run Product full load
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-load-test.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-load-test.js
 
       - name: Run Product full load test 2
         run: |
-          TARGET_HOST="http://${{ needs.deploy_dev.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-test.js
+          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-products-full-test.js
   cleanup:
     name: Cleanup on Failure
     runs-on: ubuntu-latest
