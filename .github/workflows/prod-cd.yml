@@ -55,6 +55,7 @@ jobs:
   verify_artifact:
     name: Verify promoted images exist
     runs-on: ubuntu-latest
+    needs: resolve
     steps:
       - name: Login to GHCR
         uses: docker/login-action@v3
@@ -72,7 +73,7 @@ jobs:
   deploy_prod:
     name: Deploy to Prod
     runs-on: ubuntu-latest
-    needs: verify_artifact
+    needs: [verify_artifact, resolve]
     environment:
       name: prod
     steps:
