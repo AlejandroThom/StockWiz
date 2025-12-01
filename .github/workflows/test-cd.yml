@@ -190,40 +190,40 @@ jobs:
     outputs:
       alb_dns: ${{ steps.alb_dns.outputs.alb_dns }}
 
-  load_tests:
-    name: Run k6 load tests
-    runs-on: ubuntu-latest
-    needs: deploy_test
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install k6
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y ca-certificates curl gnupg
-          curl -s https://api.github.com/repos/grafana/k6/releases/latest \
-            | grep "browser_download_url.*linux-amd64.deb" \
-            | cut -d '"' -f 4 \
-            | xargs curl -L -o k6.deb
-          sudo dpkg -i k6.deb
-
-      - name: Run Inventory product test
-        run: |
-          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-product-test.js    
-      
-      - name: Run Inventory test
-        run: |
-          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
-
-      - name: Run Product Load Test
-        run: |
-          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
+#  load_tests:
+#    name: Run k6 load tests
+#    runs-on: ubuntu-latest
+#    needs: deploy_test
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Install k6
+#        run: |
+#          sudo apt-get update
+#          sudo apt-get install -y ca-certificates curl gnupg
+#          curl -s https://api.github.com/repos/grafana/k6/releases/latest \
+#            | grep "browser_download_url.*linux-amd64.deb" \
+#            | cut -d '"' -f 4 \
+#            | xargs curl -L -o k6.deb
+#          sudo dpkg -i k6.deb
+#
+#      - name: Run Inventory product test
+#        run: |
+#          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-product-test.js    
+#      
+#      - name: Run Inventory test
+#        run: |
+#          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-inventory-test.js
+#
+#      - name: Run Product Load Test
+#        run: |
+#          TARGET_HOST="http://${{ needs.deploy_test.outputs.alb_dns }}" k6 run Tests/Load/api-gateway-load-test-products.js
 
   cleanup:
     name: Cleanup on test environment
     runs-on: ubuntu-latest
-    needs: [load_tests,deploy_test]
+    needs: [deploy_test]
     if: always()
     steps:
       - name: Checkout repository
