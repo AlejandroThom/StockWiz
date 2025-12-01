@@ -13,9 +13,10 @@ terraform {
 }
 
 module "networking" {
-  source       = "../../modules/networking"
-  project_name = var.project_name
-  vpc_cidr     = "10.2.0.0/16"
+  source            = "../../modules/networking"
+  project_name      = var.project_name
+  vpc_cidr          = "10.2.0.0/16"
+  public_subnet_cidrs = ["10.2.1.0/24", "10.2.2.0/24"]
 }
 
 module "security" {
@@ -40,9 +41,9 @@ module "compute" {
   ecs_sg_id             = module.security.ecs_instances_sg_id
   instance_profile_name = var.lab_instance_profile_name
   instance_type         = "t3.large"
-  asg_min_size          = 1
+  asg_min_size          = 2
   asg_max_size          = 4
-  asg_desired_capacity  = 1
+  asg_desired_capacity  = 2
 }
 
 module "db_redis" {
@@ -52,7 +53,7 @@ module "db_redis" {
   subnet_id         = module.networking.public_subnet_ids[0]
   ecs_sg_id         = module.security.ecs_instances_sg_id
   instance_type     = "t3.large"
-  volume_size       = 20
+  volume_size       = 50
   postgres_user     = "admin"
   postgres_password = "admin123"
   postgres_db       = "microservices_db"
@@ -66,4 +67,13 @@ module "discord_notifier" {
   discord_webhook_url = var.discord_webhook_url
   environment         = "prod"
   lab_role_arn        = data.aws_iam_role.lab_role.arn
+}
+
+module "cloudwatch" {
+  source         = "../../modules/cloudwatch"
+  project_name   = var.project_name
+  environment    = "prod"
+  aws_region     = var.aws_region
+  cluster_name   = module.compute.cluster_name
+  alb_arn_suffix = module.alb.alb_arn_suffix
 }

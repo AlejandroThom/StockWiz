@@ -13,9 +13,10 @@ terraform {
 }
 
 module "networking" {
-  source       = "../../modules/networking"
-  project_name = var.project_name
-  vpc_cidr     = "10.1.0.0/16" # Different CIDR for Test
+  source            = "../../modules/networking"
+  project_name     = var.project_name
+  vpc_cidr         = "10.1.0.0/16" # Different CIDR for Test
+  public_subnet_cidrs = ["10.1.1.0/24", "10.1.2.0/24"]
 }
 
 module "security" {
@@ -66,4 +67,13 @@ module "discord_notifier" {
   discord_webhook_url = var.discord_webhook_url
   environment       = "test"
   lab_role_arn      = data.aws_iam_role.lab_role.arn
+}
+
+module "cloudwatch" {
+  source         = "../../modules/cloudwatch"
+  project_name   = var.project_name
+  environment    = "test"
+  aws_region     = var.aws_region
+  cluster_name   = module.compute.cluster_name
+  alb_arn_suffix = module.alb.alb_arn_suffix
 }

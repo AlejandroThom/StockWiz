@@ -66,7 +66,7 @@ resource "aws_ecs_task_definition" "service" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "/ecs/${var.project_name}-${var.service_name}"
+          "awslogs-group"         = var.environment != "" ? "/ecs/${var.project_name}-${var.environment}-${var.service_name}" : "/ecs/${var.project_name}-${var.service_name}"
           "awslogs-region"        = var.aws_region
           "awslogs-stream-prefix" = "ecs"
           "awslogs-create-group"  = "true"

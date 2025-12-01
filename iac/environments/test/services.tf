@@ -18,6 +18,7 @@ module "api_gateway" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/api-gateway"
   image_tag                         = var.image_tag
   container_port                    = 8000
+  cpu                               = 512
   memory                            = 1024
   path_pattern                      = "/*"
   listener_rule_priority            = 100
@@ -28,8 +29,8 @@ module "api_gateway" {
   autoscaling_max_capacity          = 4
   health_check_grace_period_seconds = 60
   environment_variables = [
-    { name = "PRODUCT_SERVICE_URL", value = "http://${module.alb.alb_dns_name}/api" },
-    { name = "INVENTORY_SERVICE_URL", value = "http://${module.alb.alb_dns_name}/api" },
+    { name = "PRODUCT_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
+    { name = "INVENTORY_SERVICE_URL", value = "http://${module.alb.alb_dns_name}" },
     { name = "REDIS_URL", value = "${module.db_redis.private_ip}:6379" }
   ]
 }
@@ -56,8 +57,9 @@ module "product_service" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/product-service"
   image_tag                         = var.image_tag
   container_port                    = 8001
+  cpu                               = 512
   memory                            = 1024
-  path_pattern                      = "/api/products*"
+  path_pattern                      = "/products*" # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority            = 10
   create_listener_rule              = true
   desired_count                     = 2
@@ -85,8 +87,9 @@ module "inventory_service" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/inventory-service"
   image_tag                         = var.image_tag
   container_port                    = 8002
+  cpu                               = 512
   memory                            = 1024
-  path_pattern                      = "/api/inventory*"
+  path_pattern                      = "/inventory*" # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority            = 20
   create_listener_rule              = true
   desired_count                     = 2
