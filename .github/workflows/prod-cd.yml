@@ -39,6 +39,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Validate Test workflow success
+        if: ${{ github.event_name == 'workflow_run' }}
+        run: |
+          if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
+            echo "Upstream workflow failed; aborting."
+            exit 1
+          fi
       - id: vars
         name: Set commit SHA
         run: |
