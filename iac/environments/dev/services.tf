@@ -18,7 +18,7 @@ module "api_gateway" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/api-gateway"
   image_tag                         = var.image_tag
   container_port                    = 8000
-  cpu                               = 512
+  cpu                               = 256
   memory                            = 1024
   path_pattern                      = "/*"
   listener_rule_priority            = 100
@@ -57,7 +57,7 @@ module "product_service" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/product-service"
   image_tag                         = var.image_tag
   container_port                    = 8001
-  cpu                               = 512
+  cpu                               = 256
   memory                            = 1024
   path_pattern                      = "/products*" # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority            = 10
@@ -87,7 +87,7 @@ module "inventory_service" {
   image_repo                        = "ghcr.io/alejandrothom/stockwiz/inventory-service"
   image_tag                         = var.image_tag
   container_port                    = 8002
-  cpu                               = 512
+  cpu                               = 256
   memory                            = 1024
   path_pattern                      = "/inventory*" # Ruta sin /api para uso interno del API Gateway
   listener_rule_priority            = 20

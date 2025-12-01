@@ -32,6 +32,8 @@ jobs:
   resolve:
     name: Resolve artifact to deploy
     runs-on: ubuntu-latest
+    # Only run if triggered by workflow_run and the workflow succeeded
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
       commit_sha: ${{ steps.vars.outputs.commit_sha }}
     steps:
@@ -39,9 +41,10 @@ jobs:
         if: ${{ github.event_name == 'workflow_run' }}
         run: |
           if [ "${{ github.event.workflow_run.conclusion }}" != "success" ]; then
-            echo "Test workflow did not complete successfully; aborting prod deployment."
+            echo "❌ Test CD workflow did not complete successfully (conclusion: ${{ github.event.workflow_run.conclusion }}); aborting prod deployment."
             exit 1
           fi
+          echo "✅ Test CD workflow completed successfully; proceeding with prod deployment."
       - name: Checkout
         uses: actions/checkout@v4
         with:
