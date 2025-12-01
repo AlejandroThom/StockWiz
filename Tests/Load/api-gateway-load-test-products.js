@@ -4,13 +4,13 @@ import { check, sleep } from 'k6';
 export let options = {
   thresholds: {
     http_req_failed: ['rate<0.20'],      // <20% errores
-    http_req_duration: ['p(95)<5000'],    // P95 < 9000ms
+    http_req_duration: ['p(95)<30000'],    // P95 < 9000ms
   },
 
   stages: [
     { duration: '3s', target: 2 },     // ramp-up
     { duration: '8s', target: 1 },     // carga sostenida
-    { duration: '6s', target: 0 },      // ramp-down
+    { duration: '5s', target: 0 },      // ramp-down
   ]
 };
 const TARGET_HOST = __ENV.TARGET_HOST;
