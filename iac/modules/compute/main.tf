@@ -15,7 +15,7 @@ resource "aws_ecs_cluster_capacity_providers" "main" {
 }
 
 resource "aws_ecs_capacity_provider" "main" {
-  name = "${var.project_name}-capacity-provider"
+  name = var.environment != "" ? "${var.project_name}-${var.environment}-cp" : "${var.project_name}-capacity-provider"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = aws_autoscaling_group.main.arn
@@ -29,6 +29,10 @@ resource "aws_ecs_capacity_provider" "main" {
     }
 
     managed_termination_protection = "ENABLED"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 

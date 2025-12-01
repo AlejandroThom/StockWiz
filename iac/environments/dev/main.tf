@@ -36,6 +36,7 @@ module "alb" {
 module "compute" {
   source                = "../../modules/compute"
   project_name          = var.project_name
+  environment           = "dev"
   subnet_ids            = module.networking.public_subnet_ids
   ecs_sg_id             = module.security.ecs_instances_sg_id
   instance_profile_name = var.lab_instance_profile_name

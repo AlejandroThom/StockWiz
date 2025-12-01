@@ -96,3 +96,9 @@ variable "health_check_grace_period_seconds" {
   default     = 0
   description = "Seconds to ignore failing load balancer health checks on new tasks"
 }
+
+variable "environment" {
+  description = "Environment name (dev, test, prod)"
+  type        = string
+  default     = ""
+}

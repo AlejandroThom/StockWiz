@@ -6,7 +6,7 @@ data "archive_file" "lambda_zip" {
 
 resource "aws_lambda_function" "notifier" {
   filename         = data.archive_file.lambda_zip.output_path
-  function_name    = "${var.project_name}-discord-notifier"
+  function_name    = "${var.project_name}-${var.environment}-notifier"
   role             = var.lab_role_arn
   handler          = "lambda_function.lambda_handler"
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
@@ -24,10 +24,18 @@ resource "aws_lambda_function" "notifier" {
   tags = {
     Name = "${var.project_name}-discord-notifier"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_cloudwatch_log_group" "lambda" {
   name              = "/aws/lambda/${aws_lambda_function.notifier.function_name}"
   retention_in_days = 7
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 

@@ -140,6 +140,10 @@ resource "aws_appautoscaling_policy" "cpu_target" {
 }
 
 resource "aws_cloudwatch_log_group" "service" {
-  name              = "/ecs/${var.project_name}-${var.service_name}"
+  name              = var.environment != "" ? "/ecs/${var.project_name}-${var.environment}-${var.service_name}" : "/ecs/${var.project_name}-${var.service_name}"
   retention_in_days = 7
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }

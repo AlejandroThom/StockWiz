@@ -7,6 +7,7 @@ data "aws_iam_role" "lab_role" {
 module "api_gateway" {
   source                            = "../../modules/service"
   project_name                      = var.project_name
+  environment                       = "dev"
   service_name                      = "api-gateway"
   vpc_id                            = module.networking.vpc_id
   cluster_id                        = module.compute.cluster_id
@@ -44,6 +45,7 @@ data "aws_secretsmanager_secret_version" "db_password_version" {
 module "product_service" {
   source                            = "../../modules/service"
   project_name                      = var.project_name
+  environment                       = "dev"
   service_name                      = "product-service"
   vpc_id                            = module.networking.vpc_id
   cluster_id                        = module.compute.cluster_id
@@ -72,6 +74,7 @@ module "product_service" {
 module "inventory_service" {
   source                            = "../../modules/service"
   project_name                      = var.project_name
+  environment                       = "dev"
   service_name                      = "inventory-service"
   vpc_id                            = module.networking.vpc_id
   cluster_id                        = module.compute.cluster_id
